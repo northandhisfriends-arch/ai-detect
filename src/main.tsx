@@ -121,17 +121,14 @@ const AIProjectContent = () => {
 const AppLayout = () => (
   <div className="flex flex-col min-h-screen relative">
     <HashRouter>
-      {/* ส่วนเนื้อหาหลัก */}
       <main className="flex-grow bg-gray-50 pb-16">
-        {/* เพิ่ม padding-bottom ป้องกัน footer ทับเนื้อหา */}
         <Routes>
           <Route path="/" element={<AIProjectContent />} /> 
           <Route path="/questionnaire" element={<QuestionnairePage />} /> 
         </Routes>
       </main>
 
-      {/* Footer ลอยติดขอบล่างตลอดเวลา */}
-      <footer className="fixed bottom-0 left-0 w-full bg-gray-800 text-white text-center p-4 shadow-lg z-50">
+      <footer className="fixed bottom-0 left-0 w-full bg-gray-900/80 backdrop-blur-sm text-gray-300 text-center text-xs py-1 border-t border-gray-700 z-50">
         &copy; 2025 AIDetect Research Project
       </footer>
     </HashRouter>
