@@ -37,7 +37,7 @@ const AIProjectContent = () => (
                             <li>2. Press the "Start" button</li>
                             <li>3. Patients are then required to fill out the information as requested</li>
                             <li>4. Check the filled information and press submit</li>
-                            <li>5. The **AI will then analyze** the information given</li>
+                            <li>5. The AI will then analyze** the information given</li>
                             <li>6. Results will be shown after the AI finishes analyzing</li>
                         </ul>
                     </div>
@@ -49,7 +49,7 @@ const AIProjectContent = () => (
                         <ul className="text-lg text-gray-800 leading-relaxed">
                             <li>1. Provide **easier access** to diagnosis</li>
                             <li>2. Provide an alternative method instead of going to the hospital</li>
-                            <li>3. **Reduce congestion** in hospitals</li>
+                            <li>3. Reduce congestion in hospitals</li>
                             <li>4. Prevent neglect of health</li>
                         </ul>
                     </div>
