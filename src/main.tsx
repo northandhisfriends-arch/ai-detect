@@ -11,13 +11,26 @@ const AIProjectContent = () => {
     useEffect(() => {
         if (window.location.hash) {
             const hash = window.location.hash;
+
+            // 1. ลบ Hash ออกจาก URL ชั่วคราว (ป้องกัน scroll อัตโนมัติผิดตำแหน่ง)
             history.replaceState(null, '', window.location.pathname + window.location.search);
+
+            // 2. หน่วงเวลารอ DOM โหลด
             const timer = setTimeout(() => {
                 const targetElement = document.querySelector(hash);
                 if (targetElement) {
-                    targetElement.scrollIntoView({ behavior: 'smooth' });
+                    // 3. คำนวณตำแหน่งพร้อม offset (เช่น navbar สูง 80px)
+                    const offset = 80; // 🔧 ปรับได้ตามความสูงของ navbar
+                    const elementPosition = targetElement.getBoundingClientRect().top + window.scrollY;
+                    const offsetPosition = elementPosition - offset;
+
+                    // 4. เลื่อนไปตำแหน่งที่ต้องการแบบ smooth
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth',
+                    });
                 }
-            }, 50);
+            }, 100); // เพิ่ม delay เป็น 100ms เพื่อให้ DOM เสถียรขึ้น
 
             return () => clearTimeout(timer);
         }
