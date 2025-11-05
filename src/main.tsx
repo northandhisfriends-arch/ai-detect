@@ -135,6 +135,10 @@ const AppLayout = () => (
   </div>
 );
 
+if (performance.getEntriesByType("navigation")[0]?.type === "reload") {
+  window.location.replace("#/");
+}
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <AppLayout />
