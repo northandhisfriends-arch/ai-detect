@@ -14,8 +14,8 @@ const AIProjectContent = () => (
             <div className="bg-white shadow-xl rounded-xl overflow-hidden">
                 <section id="about" className="p-6 md:p-10 space-y-8">
                     
-                    <div className="border-b pb-4">
-                        <h2 id="introduction" className="text-4xl font-extrabold mb-3 text-blue-600 tracking-tight">
+                    <div className="pb-6 border-b border-gray-200">
+                        <h2 id="introduction" className="text-4xl font-extrabold mb-4 text-indigo-700 tracking-tight border-b-4 border-indigo-700 pb-2">
                             Introduction
                         </h2>
                         <p className="text-lg text-gray-700 leading-relaxed">
@@ -28,8 +28,8 @@ const AIProjectContent = () => (
                         </p>
                     </div>
 
-                    <div className="pt-4 border-b pb-4">
-                        <h2 id="process" className="text-3xl font-bold mb-4 text-gray-800">
+                    <div className="pt-4 pb-6 border-b border-gray-200">
+                        <h2 id="process" className="text-3xl font-bold mb-4 text-gray-800 border-b-2 border-gray-300 pb-2">
                             Process
                         </h2>
                         <ol className="list-decimal list-inside space-y-2 text-lg text-gray-700 pl-4">
@@ -42,8 +42,8 @@ const AIProjectContent = () => (
                         </ol>
                     </div>
 
-                    <div className="pt-4 border-b pb-4">
-                        <h2 id="objectives" className="text-3xl font-bold mb-4 text-gray-800">
+                    <div className="pt-4 pb-6 border-b border-gray-200">
+                        <h2 id="objectives" className="text-3xl font-bold mb-4 text-gray-800 border-b-2 border-gray-300 pb-2">
                             Objectives
                         </h2>
                         <ul className="list-disc list-inside space-y-2 text-lg text-gray-700 pl-4">
@@ -54,8 +54,8 @@ const AIProjectContent = () => (
                         </ul>
                     </div>
                     
-                    <div className="pt-4 border-b pb-4">
-                        <h2 id="how" className="text-3xl font-bold mb-4 text-gray-800">
+                    <div className="pt-4 pb-6 border-b border-gray-200">
+                        <h2 id="how" className="text-3xl font-bold mb-4 text-gray-800 border-b-2 border-gray-300 pb-2">
                             How it works
                         </h2>
                         <p className="text-lg text-gray-700 leading-relaxed">
@@ -79,16 +79,22 @@ const AIProjectContent = () => (
                     </div>
 
                     <div className="pt-4">
-                        <h2 id="developers" className="text-3xl font-bold mb-4 text-gray-800">
+                        <h2 id="developers" className="text-3xl font-bold mb-4 text-gray-800 border-b-2 border-gray-300 pb-2">
                             Developers
                         </h2>
-                        <div className="space-y-1 text-lg text-gray-700">
-                            <p className="font-semibold text-indigo-700">Nattanan Singtoroj</p>
-                            <p className="pl-4 text-sm text-gray-600">Main Inventor and Project Head</p>
-                            <p className="font-semibold text-indigo-700 mt-2">Khunut Thewarakphithak</p>
-                            <p className="pl-4 text-sm text-gray-600">Main Web-developer and Co-researcher</p>
-                            <p className="font-semibold text-indigo-700 mt-2">Paulprathai Chandacham</p>
-                            <p className="pl-4 text-sm text-gray-600">Main Illustrator and Co-researcher</p>
+                        <div className="space-y-3 text-lg text-gray-700">
+                            <div>
+                                <p className="font-semibold text-indigo-700">Nattanan Singtoroj</p>
+                                <p className="pl-4 text-base text-gray-600">Main Inventor and Project Head</p>
+                            </div>
+                            <div>
+                                <p className="font-semibold text-indigo-700">Khunut Thewarakphithak</p>
+                                <p className="pl-4 text-base text-gray-600">Main Web-developer and Co-researcher</p>
+                            </div>
+                            <div>
+                                <p className="font-semibold text-indigo-700">Paulprathai Chandacham</p>
+                                <p className="pl-4 text-base text-gray-600">Main Illustrator and Co-researcher</p>
+                            </div>
                         </div>
                     </div>
                 </section>
