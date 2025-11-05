@@ -32,15 +32,14 @@ const AIProjectContent = () => (
                         <h2 id="process" className="text-4xl font-bold mb-4 text-[#007c91] tracking-tight border-b-4 border-[#007c91] pb-2 scroll-mt-20">
                             Process
                         </h2>
-                        <p className="text-lg text-gray-800 leading-relaxed">
-                            1.Read and go through the website’s instructions and details
-                        </p>
-                            <li className="font-medium">Press the **"Start"** button</li>
-                            <li className="font-medium">Patients are then required to fill out the information as requested</li>
-                            <li className="font-medium">Check the filled information and press submit</li>
-                            <li className="font-medium">The **AI will then analyze** the information given</li>
-                            <li className="font-medium">Results will be shown after the AI finishes analyzing</li>
-                        </ol>
+                        <ul className="text-lg text-gray-800 leading-relaxed">
+                            <li>1. Read and go through the website’s instructions and details</li>
+                            <li>2. Press the "Start" button</li>
+                            <li>3. Patients are then required to fill out the information as requested</li>
+                            <li>4. Check the filled information and press submit</li>
+                            <li>5. The **AI will then analyze** the information given</li>
+                            <li>6. Results will be shown after the AI finishes analyzing</li>
+                        </ul>
                     </div>
 
                     <div className="pt-4 pb-6 border-b border-gray-200">
