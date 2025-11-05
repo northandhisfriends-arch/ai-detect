@@ -35,17 +35,17 @@ const Header = () => {
     account: {
       titleKey: "account",
       descriptionKey: "dialog_account_desc",
-      items: ["Profile Settings", "Billing Information", "Security", "Notifications"],
+      items: ["Profile Settings", "History", "Acount Settings", "Notifications"],
     },
     settings: {
       titleKey: "settings",
       descriptionKey: "dialog_settings_desc",
-      items: ["General Settings", "Display Options", "Privacy Controls", "Advanced"],
+      items: ["General Settings", "Display Options", "Advanced"],
     },
     about: {
       titleKey: "about_us",
       descriptionKey: "dialog_about_desc",
-      items: ["Company History", "Our Team", "Mission & Values", "Contact Information"],
+      items: ["Introduction", "Objectives", "Process", "How it works", "Developers"],
     },
     feedback: {
       titleKey: "feedback",
