@@ -59,23 +59,11 @@ const AIProjectContent = () => (
                             How it works
                         </h2>
                         <p className="text-lg text-gray-800 leading-relaxed">
-                            The AI works by taking the data inputted by the users and analyzing them.
-                            These data include:
+                            The AI works by taking the data inputted by the users and analyzing them. These data include age, 
+                            blood pressure, mass after 1 week, mass before 1 week, urine per day (mL), water intake per day (mL), 
+                            risk gender (Male/Female/Both), fatigue (Yes/No), edema (Yes/No), confusion (Yes/No), common cold (Yes/No), 
+                            thirst (Yes/No) + other symptoms
                         </p>
-                        <ul className="text-lg text-gray-800 leading-relaxed">
-                            <li>**age**</li>
-                            <li>**blood pressure**</li>
-                            <li>**mass after 1 week**</li>
-                            <li>**mass before 1 week**</li>
-                            <li>**urine per day (mL)**</li>
-                            <li>**water intake per day (mL)**</li>
-                            <li>**risk gender** (Male/Female/Both)</li>
-                            <li>**fatigue** (Yes/No)</li>
-                            <li>**edema** (Yes/No)</li>
-                            <li>**confusion** (Yes/No)</li>
-                            <li>**common cold** (Yes/No)</li>
-                            <li>**thirst** (Yes/No) + other symptoms</li>
-                        </ul>
                     </div>
 
                     <div className="pt-4">
