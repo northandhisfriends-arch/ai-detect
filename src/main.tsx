@@ -23,7 +23,7 @@ const AIProjectContent = () => (
                             It is also not convenient for many people to visit hospitals. This means they cannot receive a professional diagnosis.
                             They are either very busy or it would take too much time to go to the hospital, so they simply don’t have the time.
                             This leads to neglect of their health, as they are not receiving a trustworthy opinion. This project aims to mitigate the problems
-                            stated above by utilizing **Artificial Intelligence** in the form of a website, providing easy access to assist in diagnosing any underlying
+                            stated above by utilizing Artificial Intelligence in the form of a website, providing easy access to assist in diagnosing any underlying
                             health problems these individuals may not be aware of.
                         </p>
                     </div>
@@ -37,7 +37,7 @@ const AIProjectContent = () => (
                             <li>2. Press the "Start" button</li>
                             <li>3. Patients are then required to fill out the information as requested</li>
                             <li>4. Check the filled information and press submit</li>
-                            <li>5. The AI will then analyze** the information given</li>
+                            <li>5. The AI will then analyze the information given</li>
                             <li>6. Results will be shown after the AI finishes analyzing</li>
                         </ul>
                     </div>
