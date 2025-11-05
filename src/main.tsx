@@ -1,28 +1,19 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-// ⭐️ นำเข้า Routes และ Route เพิ่มเติม ⭐️
 import { HashRouter, Routes, Route } from 'react-router-dom';
 import ServerStatusManager from './ServerStatusManager.tsx';
-// ⭐️ ต้องนำเข้า Component ที่เป็นหน้าปลายทาง ⭐️
 import QuestionnairePage from './pages/Questionnaire.tsx'; 
 import './index.css';
 import './i18n.ts';
 
-// *******************************************************************
-// ⭐️ ส่วนที่ 1: Component AIProjectContent (เนื้อหาหน้าแรก) ⭐️
-// *******************************************************************
-// Component นี้ถูกสร้างขึ้นที่นี่โดยตรง เพื่อไม่ให้คุณต้องสร้างไฟล์ใหม่
 const AIProjectContent = () => (
     <>
-        {/* แสดง ServerStatusManager ที่ด้านบนของหน้า */}
         <ServerStatusManager /> 
 
-        {/* องค์ประกอบหลัก: เนื้อหา Introduction, Process, Objectives, ฯลฯ */}
         <main className="container mx-auto px-4 md:px-8 py-10 bg-gray-50 min-h-screen">
             <div className="bg-white shadow-xl rounded-xl overflow-hidden">
                 <section id="about" className="p-6 md:p-10 space-y-8">
                     
-                    {/* ส่วน Introduction */}
                     <div className="border-b pb-4">
                         <h2 id="introduction" className="text-4xl font-extrabold mb-3 text-blue-600 tracking-tight">
                             Introduction
@@ -37,7 +28,6 @@ const AIProjectContent = () => (
                         </p>
                     </div>
 
-                    {/* ส่วน Process */}
                     <div className="pt-4 border-b pb-4">
                         <h2 id="process" className="text-3xl font-bold mb-4 text-gray-800">
                             Process
@@ -52,7 +42,6 @@ const AIProjectContent = () => (
                         </ol>
                     </div>
 
-                    {/* ส่วน Objectives */}
                     <div className="pt-4 border-b pb-4">
                         <h2 id="objectives" className="text-3xl font-bold mb-4 text-gray-800">
                             Objectives
@@ -65,7 +54,6 @@ const AIProjectContent = () => (
                         </ul>
                     </div>
                     
-                    {/* ส่วน How it works */}
                     <div className="pt-4 border-b pb-4">
                         <h2 id="how" className="text-3xl font-bold mb-4 text-gray-800">
                             How it works
@@ -90,7 +78,6 @@ const AIProjectContent = () => (
                         </ul>
                     </div>
 
-                    {/* ส่วน Developers */}
                     <div className="pt-4">
                         <h2 id="developers" className="text-3xl font-bold mb-4 text-gray-800">
                             Developers
@@ -104,21 +91,17 @@ const AIProjectContent = () => (
                             <p className="pl-4 text-sm text-gray-600">Main Illustrator and Co-researcher</p>
                         </div>
                     </div>
-                    
                 </section>
             </div>
         </main>
     </>
 );
-// *******************************************************************
-
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <HashRouter>
       <Routes>
         
-        {/* ⭐️ แก้ไข: ต้องใช้ AIProjectContent ใน Route หน้าแรก ⭐️ */}
         <Route path="/" element={<AIProjectContent />} /> 
         
         <Route path="/questionnaire" element={<QuestionnairePage />} /> 
