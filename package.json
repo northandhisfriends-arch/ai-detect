@@ -12,7 +12,7 @@
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist"
   },
-  "homepage": "https://jakkarin-ko.github.io/bannerflow-site/",
+  "homepage": "https://northandhisfriends-arch.github.io/ai-detect/",
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
     "@radix-ui/react-accordion": "^1.2.11",
