@@ -97,16 +97,21 @@ const AIProjectContent = () => (
     </>
 );
 
+
+const AppLayout = () => (
+    <HashRouter>
+        <Routes>
+            <Route path="/" element={<AIProjectContent />} /> 
+            <Route path="/questionnaire" element={<QuestionnairePage />} /> 
+        </Routes>
+        <footer className="bg-gray-800 text-white text-center p-4 mt-8">
+            &copy; 2025 AIDetect Research Project
+        </footer>
+    </HashRouter>
+);
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <HashRouter>
-      <Routes>
-        
-        <Route path="/" element={<AIProjectContent />} /> 
-        
-        <Route path="/questionnaire" element={<QuestionnairePage />} /> 
-        
-      </Routes>
-    </HashRouter>
+    <AppLayout />
   </React.StrictMode>
 );
