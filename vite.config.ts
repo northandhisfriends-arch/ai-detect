@@ -3,9 +3,8 @@ import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
 
-// https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
-  // **เพิ่มบรรทัดนี้เพื่อแก้ปัญหา Base Path**
+
   base: "/ai-detect/",
 
   server: {
