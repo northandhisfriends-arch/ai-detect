@@ -38,7 +38,19 @@ const Header = () => {
         const id = sectionIdMap[sectionName];
         if (id) {
             setOpenDialog(null);
-            window.location.hash = `#${id}`;
+
+            setTimeout(() => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.scrollIntoView({ 
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                    
+                    // ปรับ URL Hash ให้ถูกต้องตามชื่อส่วน (เช่น #introduction)
+                    window.history.pushState(null, '', `#${id}`);
+                }
+            }, 100); 
         }
     };
 
