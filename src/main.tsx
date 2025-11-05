@@ -15,7 +15,7 @@ const AIProjectContent = () => (
                 <section id="about" className="p-6 md:p-10 space-y-8">
                     
                     <div className="pb-6 border-b border-gray-200">
-                        <h2 id="introduction" className="text-4xl font-extrabold mb-4 text-indigo-700 tracking-tight border-b-4 border-indigo-700 pb-2">
+                        <h2 id="introduction" className="text-4xl font-extrabold mb-4 text-indigo-700 tracking-tight border-b-4 border-indigo-700 pb-2 scroll-mt-20">
                             Introduction
                         </h2>
                         <p className="text-lg text-gray-700 leading-relaxed">
@@ -29,7 +29,7 @@ const AIProjectContent = () => (
                     </div>
 
                     <div className="pt-4 pb-6 border-b border-gray-200">
-                        <h2 id="process" className="text-3xl font-bold mb-4 text-gray-800 border-b-2 border-gray-300 pb-2">
+                        <h2 id="process" className="text-3xl font-bold mb-4 text-gray-800 border-b-2 border-gray-300 pb-2 scroll-mt-20">
                             Process
                         </h2>
                         <ol className="list-decimal list-inside space-y-2 text-lg text-gray-700 pl-4">
@@ -43,7 +43,7 @@ const AIProjectContent = () => (
                     </div>
 
                     <div className="pt-4 pb-6 border-b border-gray-200">
-                        <h2 id="objectives" className="text-3xl font-bold mb-4 text-gray-800 border-b-2 border-gray-300 pb-2">
+                        <h2 id="objectives" className="text-3xl font-bold mb-4 text-gray-800 border-b-2 border-gray-300 pb-2 scroll-mt-20">
                             Objectives
                         </h2>
                         <ul className="list-disc list-inside space-y-2 text-lg text-gray-700 pl-4">
@@ -55,7 +55,7 @@ const AIProjectContent = () => (
                     </div>
                     
                     <div className="pt-4 pb-6 border-b border-gray-200">
-                        <h2 id="how" className="text-3xl font-bold mb-4 text-gray-800 border-b-2 border-gray-300 pb-2">
+                        <h2 id="how" className="text-3xl font-bold mb-4 text-gray-800 border-b-2 border-gray-300 pb-2 scroll-mt-20">
                             How it works
                         </h2>
                         <p className="text-lg text-gray-700 leading-relaxed">
@@ -79,7 +79,7 @@ const AIProjectContent = () => (
                     </div>
 
                     <div className="pt-4">
-                        <h2 id="developers" className="text-3xl font-bold mb-4 text-gray-800 border-b-2 border-gray-300 pb-2">
+                        <h2 id="developers" className="text-3xl font-bold mb-4 text-gray-800 border-b-2 border-gray-300 pb-2 scroll-mt-20">
                             Developers
                         </h2>
                         <div className="space-y-3 text-lg text-gray-700">
