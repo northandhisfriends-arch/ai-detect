@@ -15,7 +15,7 @@ const AIProjectContent = () => (
                 <section id="about" className="p-6 md:p-10 space-y-8">
                     
                     <div className="pt-4 pb-6 border-b border-gray-200">
-                        <h2 id="introduction" className="text-4xl font-extrabold mb-4 text-[#007c91] tracking-tight border-b-4 border-[#007c91] pb-2 scroll-mt-20">
+                        <h2 id="introduction" className="text-4xl font-bold mb-4 text-[#007c91] tracking-tight border-b-4 border-[#007c91] pb-2 scroll-mt-20">
                             Introduction
                         </h2>
                         <p className="text-lg text-gray-800 leading-relaxed">
