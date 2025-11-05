@@ -26,7 +26,7 @@ const sectionIdMap: Record<string, string> = {
     "Developers": "developers",
 };
 
-const logoUrl = "https://github.com/northandhisfriends-arch/ai-detect/blob/main/src/assets/logo.png?raw=true",
+const logoUrl = "https://github.com/northandhisfriends-arch/ai-detect/blob/main/src/assets/logo.png?raw=true";
 
 const Header = () => {
     const [openDialog, setOpenDialog] = useState<DialogType>(null);
