@@ -124,16 +124,21 @@ const AIProjectContent = () => {
 
 
 const AppLayout = () => (
+  <div className="flex flex-col min-h-screen">
     <HashRouter>
+      <main className="flex-grow">
         <Routes>
-            <Route path="/" element={<AIProjectContent />} /> 
-            <Route path="/questionnaire" element={<QuestionnairePage />} /> 
+          <Route path="/" element={<AIProjectContent />} /> 
+          <Route path="/questionnaire" element={<QuestionnairePage />} /> 
         </Routes>
-        <footer className="bg-gray-800 text-white text-center p-4 mt-8">
-            &copy; 2025 AIDetect Research Project
-        </footer>
+      </main>
+      <footer className="bg-gray-800 text-white text-center p-4">
+        &copy; 2025 AIDetect Research Project
+      </footer>
     </HashRouter>
+  </div>
 );
+
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
