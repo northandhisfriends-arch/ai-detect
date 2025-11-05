@@ -10,26 +10,46 @@
     />
     <meta name="author" content="AIDetect Research Project" />
 
-    <meta
-      property="og:title"
-      content="AI Detect - Intelligent Health Diagnosis"
-    />
-    <meta
-      property="og:description"
-      content="AI Detect helps analyze health data using AI, providing accessible and trustworthy diagnosis assistance."
-    />
+    <meta property="og:title" content="AI Detect - Intelligent Health Diagnosis" />
+    <meta property="og:description" content="AI Detect helps analyze health data using AI, providing accessible and trustworthy diagnosis assistance." />
     <meta property="og:type" content="website" />
     <meta property="og:image" content="https://github.com/northandhisfriends-arch/ai-detect/blob/main/src/assets/image-8.png?raw=true"/>
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@northandhisfriends"/>
     <meta name="twitter:image" content="https://github.com/northandhisfriends-arch/ai-detect/blob/main/src/assets/image-8.png?raw=true"/>
-    
+
+    <!-- ✅ ป้องกันหน้าเว็บขาวเวลา refresh -->
+    <script>
+      (function() {
+        const redirect = sessionStorage.redirect;
+        delete sessionStorage.redirect;
+        if (redirect && redirect !== location.href) {
+          history.replaceState(null, null, redirect);
+        }
+      })();
+    </script>
   </head>
 
   <body>
-    
     <div id="root"></div>
     <script type="module" src="./src/main.tsx"></script>
-  
+
+    <!-- ✅ ตรวจจับการเข้า URL ตรง (GitHub Pages refresh) -->
+    <script>
+      (function(location) {
+        if (location.search[1] === '/') {
+          const decoded = location.search
+            .slice(1)
+            .split('&')
+            .map(s => s.replace(/~and~/g, '&'))
+            .join('?');
+          window.history.replaceState(
+            null,
+            null,
+            location.pathname.slice(0, -1) + decoded + location.hash
+          );
+        }
+      })(window.location);
+    </script>
   </body>
 </html>
