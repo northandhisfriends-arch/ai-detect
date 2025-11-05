@@ -92,7 +92,7 @@ const Header = () => {
                 <div className="container mx-auto px-6">
                     <div className="flex items-center justify-between h-16">
                         
-                        <a href="/" className="flex items-center space-x-2">
+                        <a href="https://northandhisfriends-arch.github.io/ai-detect/" className="flex items-center space-x-2">
                             <img 
                                 src={logoUrl} 
                                 alt={t('project_name') + " Logo"} 
