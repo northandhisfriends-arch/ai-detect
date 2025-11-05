@@ -18,7 +18,7 @@ const AIProjectContent = () => (
                         <h2 id="introduction" className="text-4xl font-extrabold mb-4 text-[#007c91] tracking-tight border-b-4 border-[#007c91] pb-2 scroll-mt-20">
                             Introduction
                         </h2>
-                        <p className="text-lg text-gray-700 leading-relaxed">
+                        <p className="text-lg text-gray-800 leading-relaxed">
                             People are hesitant to visit hospitals due to the high volume of patients who require hospital services.
                             It is also not convenient for many people to visit hospitals. This means they cannot receive a professional diagnosis.
                             They are either very busy or it would take too much time to go to the hospital, so they simply don’t have the time.
