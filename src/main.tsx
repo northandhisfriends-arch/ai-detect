@@ -47,7 +47,7 @@ const AIProjectContent = () => (
                             Objectives
                         </h2>
                         <ul className="text-lg text-gray-800 leading-relaxed">
-                            <li>1. Provide **easier access** to diagnosis</li>
+                            <li>1. Provide easier access to diagnosis</li>
                             <li>2. Provide an alternative method instead of going to the hospital</li>
                             <li>3. Reduce congestion in hospitals</li>
                             <li>4. Prevent neglect of health</li>
