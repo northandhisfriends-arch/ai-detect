@@ -26,6 +26,8 @@ const sectionIdMap: Record<string, string> = {
     "Developers": "developers",
 };
 
+const logoUrl = "https://github.com/northandhisfriends-arch/ai-detect/blob/main/src/assets/logo.png?raw=true",
+
 const Header = () => {
     const [openDialog, setOpenDialog] = useState<DialogType>(null);
     const { t, i18n } = useTranslation();
@@ -90,7 +92,14 @@ const Header = () => {
                 <div className="container mx-auto px-6">
                     <div className="flex items-center justify-between h-16">
                         
-                        <div className="text-xl font-bold text-primary">{t('project_name')}</div>
+                        <a href="/" className="flex items-center space-x-2">
+                            <img 
+                                src={logoUrl} 
+                                alt={t('project_name') + " Logo"} 
+                                className="h-10 w-auto" 
+                            />
+                            <span className="text-xl font-bold text-primary">{t('project_name')}</span>
+                        </a>
                         
                         <nav className="hidden md:flex items-center gap-8">
                             <button
