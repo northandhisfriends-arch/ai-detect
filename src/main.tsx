@@ -14,7 +14,7 @@ const AIProjectContent = () => (
             <div className="bg-white shadow-xl rounded-xl overflow-hidden">
                 <section id="about" className="p-6 md:p-10 space-y-8">
                     
-                    <div className="pb-6 border-b border-gray-200">
+                    <div className="pt-4 pb-6 border-b border-gray-200">
                         <h2 id="introduction" className="text-4xl font-extrabold mb-4 text-[#007c91] tracking-tight border-b-4 border-[#007c91] pb-2 scroll-mt-20">
                             Introduction
                         </h2>
