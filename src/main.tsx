@@ -29,24 +29,24 @@ const AIProjectContent = () => (
                     </div>
 
                     <div className="pt-4 pb-6 border-b border-gray-200">
-                        <h2 id="process" className="text-3xl font-bold mb-4 text-gray-800 border-b-2 border-gray-300 pb-2 scroll-mt-20">
+                        <h2 id="process" className="text-4xl font-bold mb-4 text-[#007c91] tracking-tight border-b-4 border-[#007c91] pb-2 scroll-mt-20">
                             Process
                         </h2>
-                        <ol className="list-decimal list-inside space-y-2 text-lg text-gray-700 pl-4">
+                        <ol className="text-lg text-gray-800 leading-relaxed">
                             <li className="font-medium">Read and go through the website’s instructions and details</li>
                             <li className="font-medium">Press the **"Start"** button</li>
                             <li className="font-medium">Patients are then required to fill out the information as requested</li>
                             <li className="font-medium">Check the filled information and press submit</li>
-                            <li className="font-medium text-blue-600">The **AI will then analyze** the information given</li>
-                            <li className="font-medium text-green-600">Results will be shown after the AI finishes analyzing</li>
+                            <li className="font-medium">The **AI will then analyze** the information given</li>
+                            <li className="font-medium">Results will be shown after the AI finishes analyzing</li>
                         </ol>
                     </div>
 
                     <div className="pt-4 pb-6 border-b border-gray-200">
-                        <h2 id="objectives" className="text-3xl font-bold mb-4 text-gray-800 border-b-2 border-gray-300 pb-2 scroll-mt-20">
+                        <h2 id="objectives" className="text-4xl font-bold mb-4 text-[#007c91] tracking-tight border-b-4 border-[#007c91] pb-2 scroll-mt-20">
                             Objectives
                         </h2>
-                        <ul className="list-disc list-inside space-y-2 text-lg text-gray-700 pl-4">
+                        <ul className="text-lg text-gray-800 leading-relaxed">
                             <li>1. Provide **easier access** to diagnosis</li>
                             <li>2. Provide an alternative method instead of going to the hospital</li>
                             <li>3. **Reduce congestion** in hospitals</li>
@@ -55,14 +55,14 @@ const AIProjectContent = () => (
                     </div>
                     
                     <div className="pt-4 pb-6 border-b border-gray-200">
-                        <h2 id="how" className="text-3xl font-bold mb-4 text-gray-800 border-b-2 border-gray-300 pb-2 scroll-mt-20">
+                        <h2 id="how" className="text-4xl font-bold mb-4 text-[#007c91] tracking-tight border-b-4 border-[#007c91] pb-2 scroll-mt-20">
                             How it works
                         </h2>
-                        <p className="text-lg text-gray-700 leading-relaxed">
+                        <p className="text-lg text-gray-800 leading-relaxed">
                             The AI works by taking the data inputted by the users and analyzing them.
                             These data include:
                         </p>
-                        <ul className="grid grid-cols-2 gap-2 mt-3 text-base text-gray-600 list-disc list-inside pl-4">
+                        <ul className="text-lg text-gray-800 leading-relaxed">
                             <li>**age**</li>
                             <li>**blood pressure**</li>
                             <li>**mass after 1 week**</li>
@@ -79,10 +79,10 @@ const AIProjectContent = () => (
                     </div>
 
                     <div className="pt-4">
-                        <h2 id="developers" className="text-3xl font-bold mb-4 text-gray-800 border-b-2 border-gray-300 pb-2 scroll-mt-20">
+                        <h2 id="developers" className="text-4xl font-bold mb-4 text-[#007c91] tracking-tight border-b-4 border-[#007c91] pb-2 scroll-mt-20">
                             Developers
                         </h2>
-                        <div className="space-y-3 text-lg text-gray-700">
+                        <div className="text-lg text-gray-800 leading-relaxed">
                             <div>
                                 <p className="font-semibold text-indigo-700">Nattanan Singtoroj</p>
                                 <p className="pl-4 text-base text-gray-600">Main Inventor and Project Head</p>
