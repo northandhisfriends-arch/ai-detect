@@ -27,7 +27,7 @@ const HeroCarousel = ({ isServerOnline }: { isServerOnline: boolean }) => {
       title: "Press start",
       subtitle: "to begin"
     },
-  {
+    {
       image: hero4,
       title: "Press start",
       subtitle: "to begin"
