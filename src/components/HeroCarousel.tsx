@@ -12,13 +12,13 @@ import hero5 from "@/assets/hero-1.jpg";
 const HeroCarousel = ({ isServerOnline }: { isServerOnline: boolean }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
-  const slides = [
-    { image: hero1, title: "AI for Smarter Healthcare" },
-    { image: hero2, title: "Empowering Diagnostics" },
-    { image: hero3, title: "Innovating with Deep Learning" },
-    { image: hero4, title: "Precision in Every Scan" },
-    { image: hero5, title: "Transforming Medical Imaging" },
-  ];
+const slides = [
+  { image: hero1, title: "Press start", subtitle: "to begin" },
+  { image: hero2, title: "Smarter Diagnosis", subtitle: "AI-driven analysis" },
+  { image: hero3, title: "Precision & Speed", subtitle: "for better outcomes" },
+  { image: hero4, title: "Empowering Radiologists", subtitle: "through technology" },
+  { image: hero5, title: "Transforming Healthcare", subtitle: "with deep learning" },
+];
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % slides.length);
