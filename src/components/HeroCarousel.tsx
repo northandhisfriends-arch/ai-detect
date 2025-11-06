@@ -8,26 +8,71 @@ import hero3 from "@/assets/hero-3.jpg";
 import hero4 from "@/assets/hero-4.jpg";
 import hero5 from "@/assets/hero-5.jpg";
 
-const HeroCarousel = () => {
+
 const HeroCarousel = ({ isServerOnline }: { isServerOnline: boolean }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
+
   const slides = [
-@@ -89,50 +89,49 @@
-          </h2>
-          <Link to="/questionnaire">
-            <Button 
-              id="startButton" 
-              style={{ display: 'none' }}
-              style={{ display: isServerOnline ? 'flex' : 'none' }}
-              size="lg"
-              className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-8 py-6 text-lg shadow-lg hover:shadow-xl transition-all"
-            >
-              START
-            </Button>
-          </Link>
+    { image: hero1, title: "Title 1", subtitle: "Subtitle 1" },
+    { image: hero2, title: "Title 2", subtitle: "Subtitle 2" },
+    { image: hero3, title: "Title 3", subtitle: "Subtitle 3" },
+    { image: hero4, title: "Title 4", subtitle: "Subtitle 4" },
+    { image: hero5, title: "Title 5", subtitle: "Subtitle 5" },
+  ];
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev === 0 ? slides.length - 1 : prev - 1));
+  };
+
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
+  };
+
+  // Auto-slide effect (ไม่บังคับ แต่มีประโยชน์)
+  useEffect(() => {
+    const slideInterval = setInterval(nextSlide, 5000); // เปลี่ยนสไลด์ทุก 5 วินาที
+    return () => clearInterval(slideInterval);
+  }, [currentSlide]);
+
+  return (
+
+    <div className="relative w-full h-[600px] overflow-hidden rounded-xl shadow-2xl">
+
+      {slides.map((slide, index) => (
+        <div
+          key={index}
+          className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+            index === currentSlide ? "opacity-100 z-10" : "opacity-0 z-0"
+          }`}
+        >
+          <img
+            src={slide.image}
+            alt={slide.title}
+            className="w-full h-full object-cover"
+          />
+
+          <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center text-center p-8">
+            <h1 className="text-4xl md:text-6xl font-extrabold text-white mb-4">
+              {slide.title}
+            </h1>
+            <p className="text-xl md:text-2xl text-gray-200 mb-8">
+              {slide.subtitle}
+            </p>
+
+            <Link to="/questionnaire">
+              <Button
+                id="startButton"
+                style={{ display: isServerOnline ? 'flex' : 'none' }}
+                size="lg"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-8 py-6 text-lg shadow-lg hover:shadow-xl transition-all"
+              >
+                START
+              </Button>
+            </Link>
+          </div>
         </div>
-      </div>
+      ))}
 
       {/* Navigation Arrows */}
       <button
