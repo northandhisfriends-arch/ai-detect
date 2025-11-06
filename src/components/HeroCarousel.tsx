@@ -13,30 +13,11 @@ const HeroCarousel = ({ isServerOnline }: { isServerOnline: boolean }) => {
 
   const slides = [
     {
-      image: hero1,
-      title: "Guiding your business",
-      subtitle: "to achieve online success"
+      image: hero1 hero2 hero3 hero4 hero5,
+      title: "Press start",
+      subtitle: "to begin"
     },
-    {
-      image: hero2,
-      title: "Collaborate with experts",
-      subtitle: "to grow your enterprise"
-    },
-    {
-      image: hero3,
-      title: "Empower your team",
-      subtitle: "with innovative solutions"
-    },
-    {
-      image: hero4,
-      title: "Reach new heights",
-      subtitle: "in your industry"
-    },
-    {
-      image: hero5,
-      title: "Build lasting partnerships",
-      subtitle: "for sustainable growth"
-    }
+    
   ];
 
   useEffect(() => {
