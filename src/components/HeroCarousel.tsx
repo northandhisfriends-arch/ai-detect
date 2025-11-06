@@ -13,7 +13,27 @@ const HeroCarousel = ({ isServerOnline }: { isServerOnline: boolean }) => {
 
   const slides = [
     {
-      image: hero1 hero2 hero3 hero4 hero5,
+      image: hero1,
+      title: "Press start",
+      subtitle: "to begin"
+    },
+    {
+      image: hero2,
+      title: "Press start",
+      subtitle: "to begin"
+    },
+    {
+      image: hero3,
+      title: "Press start",
+      subtitle: "to begin"
+    },
+  {
+      image: hero4,
+      title: "Press start",
+      subtitle: "to begin"
+    },
+    {
+      image: hero5,
       title: "Press start",
       subtitle: "to begin"
     },
