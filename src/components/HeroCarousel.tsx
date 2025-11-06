@@ -2,43 +2,45 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+
 import hero1 from "@/assets/hero-1.jpg";
+import hero2 from "@/assets/hero-1.jpg";
+import hero3 from "@/assets/hero-1.jpg";
+import hero4 from "@/assets/hero-1.jpg";
+import hero5 from "@/assets/hero-1.jpg";
 
 const HeroCarousel = ({ isServerOnline }: { isServerOnline: boolean }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
-
   const slides = [
-    { image: hero1, title: "Title 1", subtitle: "Subtitle 1" },
-    { image: hero2, title: "Title 2", subtitle: "Subtitle 2" },
-    { image: hero3, title: "Title 3", subtitle: "Subtitle 3" },
-    { image: hero4, title: "Title 4", subtitle: "Subtitle 4" },
-    { image: hero5, title: "Title 5", subtitle: "Subtitle 5" },
+    { image: hero1, title: "AI for Smarter Healthcare" },
+    { image: hero2, title: "Empowering Diagnostics" },
+    { image: hero3, title: "Innovating with Deep Learning" },
+    { image: hero4, title: "Precision in Every Scan" },
+    { image: hero5, title: "Transforming Medical Imaging" },
   ];
 
-  const prevSlide = () => {
-    setCurrentSlide((prev) => (prev === 0 ? slides.length - 1 : prev - 1));
-  };
-
   const nextSlide = () => {
-    setCurrentSlide((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
+    setCurrentSlide((prev) => (prev + 1) % slides.length);
   };
 
-  // Auto-slide effect (ไม่บังคับ แต่มีประโยชน์)
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
+  };
+
   useEffect(() => {
-    const slideInterval = setInterval(nextSlide, 5000); // เปลี่ยนสไลด์ทุก 5 วินาที
-    return () => clearInterval(slideInterval);
-  }, [currentSlide]);
+    const interval = setInterval(nextSlide, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
-
-    <div className="relative w-full h-[600px] overflow-hidden rounded-xl shadow-2xl">
-
+    <div className="relative w-full h-[85vh] overflow-hidden">
+      {/* Slides */}
       {slides.map((slide, index) => (
         <div
           key={index}
-          className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-            index === currentSlide ? "opacity-100 z-10" : "opacity-0 z-0"
+          className={`absolute inset-0 transition-opacity duration-1000 ${
+            index === currentSlide ? "opacity-100" : "opacity-0"
           }`}
         >
           <img
@@ -46,19 +48,14 @@ const HeroCarousel = ({ isServerOnline }: { isServerOnline: boolean }) => {
             alt={slide.title}
             className="w-full h-full object-cover"
           />
-
-          <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center text-center p-8">
-            <h1 className="text-4xl md:text-6xl font-extrabold text-white mb-4">
+          <div className="absolute inset-0 bg-black/50 flex flex-col justify-center items-center text-center text-white px-6">
+            <h2 className="text-4xl md:text-5xl font-bold mb-6">
               {slide.title}
-            </h1>
-            <p className="text-xl md:text-2xl text-gray-200 mb-8">
-              {slide.subtitle}
-            </p>
-
+            </h2>
             <Link to="/questionnaire">
               <Button
                 id="startButton"
-                style={{ display: isServerOnline ? 'flex' : 'none' }}
+                style={{ display: isServerOnline ? "flex" : "none" }}
                 size="lg"
                 className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-8 py-6 text-lg shadow-lg hover:shadow-xl transition-all"
               >
