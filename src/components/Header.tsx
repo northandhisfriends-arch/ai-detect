@@ -59,27 +59,27 @@ const Header = () => {
     const dialogContent = {
         account: {
             titleKey: "account",
-            descriptionKey: "dialog_account_desc",
+            descriptionKey: "",
             items: ["Profile Settings", "History", "Acount Settings", "Notifications"],
         },
         settings: {
             titleKey: "settings",
-            descriptionKey: "dialog_settings_desc",
+            descriptionKey: "",
             items: ["General Settings", "Display Options", "Advanced"],
         },
         about: {
             titleKey: "about_us",
-            descriptionKey: "dialog_about_desc",
+            descriptionKey: "",
             items: ["Introduction", "Objectives", "Process", "How it works", "Developers"],
         },
         feedback: {
             titleKey: "feedback",
-            descriptionKey: "dialog_feedback_desc",
+            descriptionKey: "",
             items: ["Submit Feedback", "Report an Issue", "Feature Request", "Customer Support"],
         },
         privacy: {
             titleKey: "privacy_policy",
-            descriptionKey: "dialog_privacy_desc",
+            descriptionKey: "",
             items: ["Privacy Policy", "Terms of Service", "Cookie Policy", "Data Protection"],
         },
     };
