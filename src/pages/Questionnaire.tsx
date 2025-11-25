@@ -238,9 +238,9 @@ const Questionnaire = () => {
             </div>
 
             {/* Content container with blurred background for readability */}
-            <div className="max-w-4xl mx-auto backdrop-blur-sm bg-white/80 rounded-xl p-6 shadow-2xl">
+            <div className="max-w-4xl mx-auto backdrop-blur-sm bg-white/60 rounded-xl p-6 shadow-2xl">
                 <h1 className="text-4xl font-bold text-center mb-8 text-primary">Health Information Questionnaire</h1>
-                <form onSubmit={handleSubmit} className="bg-card rounded-xl shadow-lg p-8 space-y-6">
+                <form onSubmit={handleSubmit} className="bg-white/60 rounded-xl shadow-lg p-8 space-y-6">
 
                     {/* Age Selection */}
                     <div>
