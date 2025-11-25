@@ -141,7 +141,7 @@ const Questionnaire = () => {
             // Water features (mL)
             "<=2700": 0, ">=3700": 0, 
             // Blood Pressure features
-            "120/80": 0, ">130/80", "<130/80": 0, ">=130/80": 0, ">140/80": 0, "95-145/80": 0, 
+            "120/80": 0, ">130/80": 0, "<130/80": 0, ">=130/80": 0, ">140/80": 0, "95-145/80": 0, 
             // Mass features
             "Mass": 0, "Negligible": 0, "Overweight": 0, 
             // Mass Change features
