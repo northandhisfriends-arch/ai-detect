@@ -1,4 +1,5 @@
 import { useState, useEffect, FormEvent } from "react";
+// Assuming the following components are available from a UI library like shadcn/ui
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import {
@@ -17,20 +18,13 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { CheckCircle, XCircle, Heart } from "lucide-react";
+import { CheckCircle, XCircle } from "lucide-react";
 
-// Define the API Endpoint
+// Define the API Endpoint for the disease prediction model
 const API_ENDPOINT = "https://aidetect-github-io.onrender.com";
 
+// Background image URL for the questionnaire
 const BACKGROUND_IMAGE_URL = 'https://github.com/northandhisfriends-arch/ai-detect/blob/main/src/assets/bg_q.jpg?raw=true';
-2.  **ปรับปรุง Container หลัก:** แก้ไข `className` ของ `div` ภายนอกสุดให้เป็น:
-```jsx
-<div className={`min-h-screen py-20 px-4 bg-gray-100 bg-cover bg-center bg-fixed 
-    bg-[url('${BACKGROUND_IMAGE_URL}')]`}>
-    * `bg-[url(...)]`: กำหนด URL ของภาพพื้นหลัง
-* `bg-cover`: ทำให้ภาพพื้นหลังครอบคลุมพื้นที่ทั้งหมด
-* `bg-center`: จัดภาพให้อยู่ตรงกลาง
-* `bg-fixed`: ทำให้ภาพพื้นหลังอยู่กับที่เมื่อผู้ใช้เลื่อนหน้าจอ
 
 // Form data structure
 interface FormData {
@@ -54,12 +48,17 @@ interface ModalContent {
 }
 
 const Questionnaire = () => {
+    // State to track the server connection status (critical for submission)
     const [serverStatus, setServerStatus] = useState<"checking" | "online" | "offline">("checking");
     const [isModalOpen, setIsModalOpen] = useState(false);
-    // Update: Changed ModalContent to a structured format
+    // State for the prediction result modal content
     const [modalContent, setModalContent] = useState<ModalContent>({ title: "", prediction: null, probability: null });
+    
+    // Hooks for navigation and notifications
     const { toast } = useToast();
     const navigate = useNavigate();
+
+    // State for all form inputs
     const [formData, setFormData] = useState<FormData>({
         age: "",
         urine: "",
@@ -72,6 +71,7 @@ const Questionnaire = () => {
         symptoms: [] as string[],
     });
 
+    // List of symptoms for the checkbox group
     const symptoms = [
         "Wheezing", "Headache", "Short Breaths", "Rapid Breathing", "Anxiety",
         "Urine at Night", "Irritability", "Blurred Vision", "Slow Healing",
@@ -81,22 +81,23 @@ const Questionnaire = () => {
     ];
 
     // ====================================================================
-    // 1. Server Status Check
+    // 1. Server Status Check: Polls the API status endpoint
     // ====================================================================
     useEffect(() => {
         let timeoutId: NodeJS.Timeout;
         const checkServerStatus = async () => {
             try {
+                // Fetch to a simple status endpoint to confirm API is running
                 const res = await fetch(`${API_ENDPOINT}/api/status`);
                 const data = await res.json();
                 const status = data.status === "online" ? "online" : "offline";
                 setServerStatus(status);
                 if (status !== "online") {
-                    timeoutId = setTimeout(checkServerStatus, 5000); // Re-check if offline
+                    timeoutId = setTimeout(checkServerStatus, 5000); // Re-check every 5s if offline
                 }
             } catch {
                 setServerStatus("offline");
-                timeoutId = setTimeout(checkServerStatus, 5000); // Re-check on error
+                timeoutId = setTimeout(checkServerStatus, 5000); // Re-check every 5s on fetch error
             }
         };
         checkServerStatus();
@@ -107,16 +108,19 @@ const Questionnaire = () => {
     // ====================================================================
     // 2. Form Handlers
     // ====================================================================
+
+    // Handles changes for all Select/Dropdown inputs
     const handleSelectChange = (field: keyof Omit<FormData, 'symptoms'>, value: string) => {
         setFormData(prev => ({ ...prev, [field]: value }));
     };
 
+    // Handles changes for Checkbox/Symptom inputs
     const handleSymptomChange = (symptom: string, checked: boolean) => {
         setFormData(prev => ({
             ...prev,
             symptoms: checked
-                ? [...prev.symptoms, symptom]
-                : prev.symptoms.filter(s => s !== symptom),
+                ? [...prev.symptoms, symptom] // Add symptom if checked
+                : prev.symptoms.filter(s => s !== symptom), // Remove symptom if unchecked
         }));
     };
 
@@ -126,30 +130,42 @@ const Questionnaire = () => {
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
 
-        // The comprehensive list of 62 features for one-hot encoding
+        // 62-Feature dictionary for one-hot encoding (required by the backend model)
         const data62Features: Record<string, number> = {
+            // Age features
             "0-1": 0, "5-15": 0, "10-20": 0, "40+": 0, "45+": 0, "50+": 0, "60+": 0, "65+": 0,
+            // Urine features (mL)
             "<500": 0, "<800": 0, "350-550": 0, "800-2000": 0, "2000-3000": 0, ">2000": 0, ">3000": 0,
-            ">=18.5": 0, ">=25": 0, "N/a": 0, "<=2700": 0, ">=3700": 0, "120/80": 0, ">130/80": 0,
-            "<130/80": 0, ">=130/80": 0, ">140/80": 0, "95-145/80": 0, "Mass": 0, "Negligible": 0,
-            "Overweight": 0, "M+/-": 0, "M+7Kg": 0, "-M+7Kg or 10Kg": 0, "M minus 1Kg": 0,
+            // BMI features
+            ">=18.5": 0, ">=25": 0, "N/a": 0, 
+            // Water features (mL)
+            "<=2700": 0, ">=3700": 0, 
+            // Blood Pressure features
+            "120/80": 0, ">130/80", "<130/80": 0, ">=130/80": 0, ">140/80": 0, "95-145/80": 0, 
+            // Mass features
+            "Mass": 0, "Negligible": 0, "Overweight": 0, 
+            // Mass Change features
+            "M+/-": 0, "M+7Kg": 0, "-M+7Kg or 10Kg": 0, "M minus 1Kg": 0,
             "M minus 5Kg": 0, "M minus 10Kg": 0, "M minus 0.5-1Kg": 0, "<M": 0, "No change": 0,
-            "Negligible.1": 0, "Male": 0, "Female": 0,
-            ...Object.fromEntries(symptoms.map(s => [s, 0])) // Map symptoms to initial 0
+            "Negligible.1": 0, 
+            // Gender features
+            "Male": 0, "Female": 0,
+            // Symptom features (mapped from the array)
+            ...Object.fromEntries(symptoms.map(s => [s, 0])) 
         };
 
-        // Map dropdown selections to 1
+        // One-hot encode dropdown selections
         (["age", "urine", "bmi", "water", "bp", "mass", "massChange", "gender"] as const).forEach(field => {
             const value = formData[field];
             if (value && data62Features.hasOwnProperty(value)) data62Features[value] = 1;
         });
 
-        // Map selected symptoms to 1
+        // One-hot encode selected symptoms
         formData.symptoms.forEach(symptom => {
             if (data62Features.hasOwnProperty(symptom)) data62Features[symptom] = 1;
         });
 
-        // Optional: Basic validation before submission
+        // Basic validation for required dropdown fields
         const requiredFields: (keyof Omit<FormData, 'symptoms'>)[] = ["age", "urine", "bmi", "water", "bp", "mass", "massChange", "gender"];
         const isFormValid = requiredFields.every(field => formData[field] !== "");
 
@@ -163,6 +179,7 @@ const Questionnaire = () => {
         }
 
         try {
+            // API call to the prediction endpoint
             const res = await fetch(`${API_ENDPOINT}/predict`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -178,7 +195,7 @@ const Questionnaire = () => {
             const predictedDisease: string = result.prediction || 'Unknown Disease';
             const confidenceScore: number = result.probability || 0;
 
-            // Update: Set structured Modal Content
+            // Set modal content and open it
             setModalContent({
                 title: "Analysis Result",
                 prediction: predictedDisease,
@@ -186,6 +203,7 @@ const Questionnaire = () => {
             });
             setIsModalOpen(true);
         } catch (err: any) {
+            // Handle connection or prediction error
             setModalContent({
                 title: "Error",
                 prediction: null,
@@ -193,7 +211,6 @@ const Questionnaire = () => {
                 error: `Could not connect or prediction failed: ${err.message}`
             });
             setIsModalOpen(true);
-            // Toast is not needed as modal shows the error.
         }
     };
 
@@ -204,7 +221,13 @@ const Questionnaire = () => {
     const confidencePercent = modalContent.probability !== null ? (modalContent.probability * 100).toFixed(2) : 'N/A';
 
     return (
-        <div className="min-h-screen bg-background py-20 px-4">
+        // Main container with fixed background image and proper styling
+        <div 
+            className={`min-h-screen py-20 px-4 bg-gray-100 bg-cover bg-center bg-fixed`}
+            style={{
+                backgroundImage: `url('${BACKGROUND_IMAGE_URL}')`,
+            }}
+        >
 
             {/* Server Status Indicator (Fixed Position) */}
             <div className="fixed bottom-5 right-5 bg-card rounded-lg shadow-lg px-4 py-2 flex items-center gap-2 border border-border z-50">
@@ -214,11 +237,12 @@ const Questionnaire = () => {
                 </span>
             </div>
 
-            <div className="max-w-4xl mx-auto">
+            {/* Content container with blurred background for readability */}
+            <div className="max-w-4xl mx-auto backdrop-blur-sm bg-white/80 rounded-xl p-6 shadow-2xl">
                 <h1 className="text-4xl font-bold text-center mb-8 text-primary">Health Information Questionnaire</h1>
                 <form onSubmit={handleSubmit} className="bg-card rounded-xl shadow-lg p-8 space-y-6">
 
-                    {/* Age */}
+                    {/* Age Selection */}
                     <div>
                         <Label htmlFor="age-select">Age</Label>
                         <Select onValueChange={(v) => handleSelectChange("age", v)} value={formData.age}>
@@ -229,7 +253,7 @@ const Questionnaire = () => {
                         </Select>
                     </div>
 
-                    {/* Urine */}
+                    {/* Urine Selection */}
                     <div>
                         <Label htmlFor="urine-select">Urine per Day (mL)</Label>
                         <Select onValueChange={(v) => handleSelectChange("urine", v)} value={formData.urine}>
@@ -240,7 +264,7 @@ const Questionnaire = () => {
                         </Select>
                     </div>
 
-                    {/* BMI */}
+                    {/* BMI Selection */}
                     <div>
                         <Label htmlFor="bmi-select">Body Mass Index (BMI)</Label>
                         <Select onValueChange={(v) => handleSelectChange("bmi", v)} value={formData.bmi}>
@@ -255,7 +279,7 @@ const Questionnaire = () => {
                         </Select>
                     </div>
 
-                    {/* Water */}
+                    {/* Water Intake Selection */}
                     <div>
                         <Label htmlFor="water-select">Water Intake (mL)</Label>
                         <Select onValueChange={(v) => handleSelectChange("water", v)} value={formData.water}>
@@ -266,7 +290,7 @@ const Questionnaire = () => {
                         </Select>
                     </div>
 
-                    {/* Blood Pressure */}
+                    {/* Blood Pressure Selection */}
                     <div>
                         <Label htmlFor="bp-select">Blood Pressure (Systolic/Diastolic)</Label>
                         <Select onValueChange={(v) => handleSelectChange("bp", v)} value={formData.bp}>
@@ -277,7 +301,7 @@ const Questionnaire = () => {
                         </Select>
                     </div>
 
-                    {/* Mass */}
+                    {/* Mass Classification Selection */}
                     <div>
                         <Label htmlFor="mass-select">Mass Classification</Label>
                         <Select onValueChange={(v) => handleSelectChange("mass", v)} value={formData.mass}>
@@ -288,7 +312,7 @@ const Questionnaire = () => {
                         </Select>
                     </div>
 
-                    {/* Mass Change */}
+                    {/* Mass Change Selection */}
                     <div>
                         <Label htmlFor="massChange-select">Mass Change (Relative to Normal Mass 'M')</Label>
                         <Select onValueChange={(v) => handleSelectChange("massChange", v)} value={formData.massChange}>
@@ -299,7 +323,7 @@ const Questionnaire = () => {
                         </Select>
                     </div>
 
-                    {/* Gender */}
+                    {/* Gender Selection */}
                     <div>
                         <Label htmlFor="gender-select">Gender</Label>
                         <Select onValueChange={(v) => handleSelectChange("gender", v)} value={formData.gender}>
@@ -310,7 +334,7 @@ const Questionnaire = () => {
                         </Select>
                     </div>
 
-                    {/* Symptoms */}
+                    {/* Symptoms Checkboxes */}
                     <div>
                         <Label>Symptoms</Label>
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-2">
@@ -327,20 +351,21 @@ const Questionnaire = () => {
                         </div>
                     </div>
 
+                    {/* Submission Button (disabled if server is offline/checking) */}
                     <Button type="submit" className="w-full mt-8" size="lg" disabled={serverStatus !== 'online'}>
                         {serverStatus === 'online' ? "Submit for Analysis" : "Waiting for Server..."}
                     </Button>
                 </form>
             </div>
 
-            {/* Result Dialog */}
+            {/* Result Dialog Modal */}
             <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
                 <DialogContent>
                     <DialogHeader>
                         <DialogTitle className="text-primary">{modalContent.title}</DialogTitle>
 
-                        {/* Updated Code: Structured result display with conditional colors/icons */}
                         <div className="text-lg pt-4 space-y-3">
+                            {/* Display Error Message */}
                             {modalContent.error ? (
                                 <p className="text-red-600 font-semibold flex items-center">
                                     <XCircle className="w-6 h-6 mr-2" />
@@ -348,6 +373,7 @@ const Questionnaire = () => {
                                 </p>
                             ) : modalContent.prediction && (
                                 <>
+                                    {/* Display Prediction Result */}
                                     <div className="flex items-center text-2xl font-bold">
                                         <p>
                                             Predicted Disease:
@@ -355,30 +381,29 @@ const Questionnaire = () => {
                                         <span className={`ml-2 ${isNMD ? "text-green-600" : "text-red-600"}`}>
                                             {modalContent.prediction}
                                         </span>
-                                        {/* Show green CheckCircle only for NMD */}
-                                        {isNMD && <CheckCircle className="w-7 h-7 ml-3 text-green-600" />}
-                                        {/* Show red XCircle for other diseases */}
-                                        {!isNMD && <XCircle className="w-7 h-7 ml-3 text-red-600" />}
+                                        {/* Icon based on prediction */}
+                                        {isNMD ? (
+                                            <CheckCircle className="w-7 h-7 ml-3 text-green-600" />
+                                        ) : (
+                                            <XCircle className="w-7 h-7 ml-3 text-red-600" />
+                                        )}
                                     </div>
 
+                                    {/* Display Confidence Score */}
                                     <p className="text-sm text-muted-foreground">
                                         Confidence Score: {confidencePercent}%
                                     </p>
 
-                                    {isNMD && (
-                                        <p className="text-sm text-gray-500 pt-2 border-t mt-4">
-                                            **Recommendation:** The low confidence score indicates no matching disease data in the system. Please consult a doctor for an accurate diagnosis.
-                                        </p>
-                                    )}
-                                    {!isNMD && (
-                                        <p className="text-sm text-gray-500 pt-2 border-t mt-4">
-                                            **Warning:** Please consult a healthcare professional to confirm this analysis.
-                                        </p>
-                                    )}
+                                    {/* Recommendation based on result */}
+                                    <p className="text-sm text-gray-500 pt-2 border-t mt-4">
+                                        {isNMD 
+                                            ? "**Recommendation:** The low confidence score indicates no matching disease data in the system. Please consult a doctor for an accurate diagnosis."
+                                            : "**Warning:** Please consult a healthcare professional to confirm this analysis."
+                                        }
+                                    </p>
                                 </>
                             )}
                         </div>
-                        {/* End of Update */}
                     </DialogHeader>
                 </DialogContent>
             </Dialog>
