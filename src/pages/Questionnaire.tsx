@@ -247,32 +247,36 @@ const Questionnaire = () => {
                     </Select>
                 </div>
 
-                {/* Gender Selection - พร้อมไอคอนรูปภาพ */}
+                {/* Gender Selection - MODIFIED to Button Group */}
                 <div>
-                    <Label htmlFor="gender-select">Gender</Label>
-                    <Select onValueChange={(v) => handleSelectChange("gender", v)} value={formData.gender}>
-                        <SelectTrigger id="gender-select" className="flex items-center">
-                            {/* แสดงไอคอนที่ถูกเลือกใน Trigger */}
-                            {formData.gender === "Male" && <img src={maleIcon} alt="Male Icon" className="w-5 h-5 mr-2" />}
-                            {formData.gender === "Female" && <img src={femaleIcon} alt="Female Icon" className="w-5 h-5 mr-2" />}
-                            <SelectValue placeholder="Select gender (Required)" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="Male">
-                                <div className="flex items-center">
-                                    <img src={maleIcon} alt="Male Icon" className="w-5 h-5 mr-2" />
-                                    <span>Male</span>
-                                </div>
-                            </SelectItem>
-                            <SelectItem value="Female">
-                                <div className="flex items-center">
-                                    <img src={femaleIcon} alt="Female Icon" className="w-5 h-5 mr-2" />
-                                    <span>Female</span>
-                                </div>
-                            </SelectItem>
-                        </SelectContent>
-                    </Select>
+                    <Label htmlFor="gender-select" className="mb-2 block">Gender (Required)</Label>
+                    <div className="flex space-x-4">
+                        {/* Male Button */}
+                        <Button
+                            type="button"
+                            // กำหนด variant เป็น default เมื่อถูกเลือก, เป็น outline เมื่อยังไม่ถูกเลือก
+                            variant={formData.gender === "Male" ? "default" : "outline"}
+                            onClick={() => handleSelectChange("gender", "Male")}
+                            // จัดรูปแบบให้แสดงรูปและข้อความในแนวตั้ง และเพิ่ม ring เมื่อถูกเลือก
+                            className={`flex flex-col items-center justify-center p-4 h-auto w-1/2 ${formData.gender === "Male" ? "ring-2 ring-primary border-primary" : "border-gray-300"}`}
+                        >
+                            <img src={maleIcon} alt="Male Icon" className="w-8 h-8 mb-2" />
+                            <span className="font-semibold">Male</span>
+                        </Button>
+
+                        {/* Female Button */}
+                        <Button
+                            type="button"
+                            variant={formData.gender === "Female" ? "default" : "outline"}
+                            onClick={() => handleSelectChange("gender", "Female")}
+                            className={`flex flex-col items-center justify-center p-4 h-auto w-1/2 ${formData.gender === "Female" ? "ring-2 ring-primary border-primary" : "border-gray-300"}`}
+                        >
+                            <img src={femaleIcon} alt="Female Icon" className="w-8 h-8 mb-2" />
+                            <span className="font-semibold">Female</span>
+                        </Button>
+                    </div>
                 </div>
+                {/* End of Gender Selection */}
 
                 {/* BMI Selection */}
                 <div>
