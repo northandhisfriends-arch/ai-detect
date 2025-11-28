@@ -260,7 +260,7 @@ const Questionnaire = () => {
                             // จัดรูปแบบให้แสดงรูปและข้อความในแนวตั้ง และเพิ่ม ring เมื่อถูกเลือก
                             className={`flex flex-col items-center justify-center p-4 h-auto w-1/2 ${formData.gender === "Male" ? "ring-2 ring-primary border-primary" : "border-gray-300"}`}
                         >
-                            <img src={maleIcon} alt="Male Icon" className="w-8 h-8 mb-2" />
+                            <img src={maleIcon} alt="Male Icon" className="w-12 h-12 mb-2" />
                             <span className="font-semibold">Male</span>
                         </Button>
 
@@ -271,7 +271,7 @@ const Questionnaire = () => {
                             onClick={() => handleSelectChange("gender", "Female")}
                             className={`flex flex-col items-center justify-center p-4 h-auto w-1/2 ${formData.gender === "Female" ? "ring-2 ring-primary border-primary" : "border-gray-300"}`}
                         >
-                            <img src={femaleIcon} alt="Female Icon" className="w-8 h-8 mb-2" />
+                            <img src={femaleIcon} alt="Female Icon" className="w-12 h-12 mb-2" />
                             <span className="font-semibold">Female</span>
                         </Button>
                     </div>
