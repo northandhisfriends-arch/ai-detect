@@ -18,7 +18,7 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { CheckCircle, XCircle, ArrowLeft, ArrowRight } from "lucide-react"; // Added navigation icons
+import { CheckCircle, XCircle, ArrowLeft, ArrowRight } from "lucide-react";
 
 // Define the API Endpoint for the disease prediction model
 const API_ENDPOINT = "https://aidetect-github-io.onrender.com";
@@ -135,7 +135,7 @@ const Questionnaire = () => {
             return;
         }
 
-        // Only move to the next step if valid and not already on the last step (Part 3)
+        // Move to the next step
         if (currentStep < 3) {
             setCurrentStep(prev => prev + 1);
         }
@@ -148,22 +148,20 @@ const Questionnaire = () => {
     };
 
     // ====================================================================
-    // 4. Submission Handler (Only triggered from Part 3)
+    // 4. Submission Handler (Only triggered by the Submit button)
     // ====================================================================
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
 
-        // Check if all required fields from Part 1 and Part 2 are selected 
-        // (Part 3, symptoms, is optional)
+        // **IMPORTANT:** Perform final validation to ensure all critical dropdowns are filled
         const allRequiredFields = [...requiredFieldsPart1, ...requiredFieldsPart2];
         const isFormValid = allRequiredFields.every(field => formData[field] !== "");
 
         if (!isFormValid) {
-             // This toast should ideally not fire if handleNext works correctly for Part 1 & 2
-             // but acts as a final safeguard.
+            // This should ideally not happen if handleNext was used correctly, but good for safety.
             toast({
                 title: "Validation Error",
-                description: "Please ensure all dropdown fields in Part 1 and Part 2 are selected.",
+                description: "Please ensure all required dropdown fields in Part 1 and Part 2 are selected.",
                 variant: "destructive"
             });
             return;
@@ -210,13 +208,13 @@ const Questionnaire = () => {
             const predictedDisease: string = result.prediction || 'Unknown Disease';
             const confidenceScore: number = result.probability || 0;
 
-            // Set modal content and open it
+            // Set modal content and OPEN THE MODAL ONLY HERE
             setModalContent({
                 title: "Analysis Result",
                 prediction: predictedDisease,
                 probability: confidenceScore
             });
-            setIsModalOpen(true);
+            setIsModalOpen(true); // <--- Modal only opens after successful submission
         } catch (err: any) {
             // Handle connection or prediction error
             setModalContent({
@@ -230,7 +228,7 @@ const Questionnaire = () => {
     };
 
     // ====================================================================
-    // 5. Render Functions for Each Part
+    // 5. Render Functions for Each Part (Unchanged)
     // ====================================================================
 
     // Function to render Part 1: Basic Information
@@ -394,6 +392,7 @@ const Questionnaire = () => {
                     <div className={`w-1/3 h-2 rounded-r-full mx-1 ${currentStep >= 3 ? 'bg-primary' : 'bg-gray-300'}`} />
                 </div>
 
+                {/* The form calls handleSubmit only when the final Submit button is clicked */}
                 <form onSubmit={handleSubmit} className="bg-white/60 rounded-xl shadow-lg p-8 space-y-6">
 
                     {/* Conditional Rendering of Parts */}
@@ -416,16 +415,18 @@ const Questionnaire = () => {
 
                         {/* Next/Submit Button */}
                         {currentStep < 3 ? (
+                            // NEXT BUTTON
                             <Button
-                                type="button"
+                                type="button" // Use type="button" to prevent form submission
                                 onClick={handleNext}
                                 className="flex items-center"
                             >
                                 Next <ArrowRight className="w-4 h-4 ml-2" />
                             </Button>
                         ) : (
+                            // SUBMIT BUTTON (Only appears on Part 3)
                             <Button 
-                                type="submit" 
+                                type="submit" // Use type="submit" to trigger handleSubmit
                                 size="lg" 
                                 disabled={serverStatus !== 'online'}
                                 className="flex items-center bg-red-600 hover:bg-red-700"
@@ -437,7 +438,7 @@ const Questionnaire = () => {
                 </form>
             </div>
 
-            {/* Result Dialog Modal (Unchanged) */}
+            {/* Result Dialog Modal (Opens only when isModalOpen is true after successful submission) */}
             <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
                 <DialogContent>
                     <DialogHeader>
