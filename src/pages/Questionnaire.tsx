@@ -1,4 +1,4 @@
-import { useState, useEffect, FormEvent } from "react";
+import { useState, useEffect } from "react"; // Removed FormEvent from import
 // Assuming the following components are available from a UI library like shadcn/ui
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -148,22 +148,20 @@ const Questionnaire = () => {
     };
 
     // ====================================================================
-    // 4. Submission Handler (Only triggered by the Submit button)
+    // 4. Submission Handler (TRIGGERED ONLY BY CLICKING THE SUBMIT BUTTON)
     // ====================================================================
-    const handleSubmit = async (e: FormEvent) => {
-        e.preventDefault();
-
+    const handleSubmit = async () => {
         // **IMPORTANT:** Perform final validation to ensure all critical dropdowns are filled
         const allRequiredFields = [...requiredFieldsPart1, ...requiredFieldsPart2];
         const isFormValid = allRequiredFields.every(field => formData[field] !== "");
 
         if (!isFormValid) {
-            // This should ideally not happen if handleNext was used correctly, but good for safety.
             toast({
                 title: "Validation Error",
                 description: "Please ensure all required dropdown fields in Part 1 and Part 2 are selected.",
                 variant: "destructive"
             });
+            // Stop submission if validation fails
             return;
         }
         
@@ -392,8 +390,9 @@ const Questionnaire = () => {
                     <div className={`w-1/3 h-2 rounded-r-full mx-1 ${currentStep >= 3 ? 'bg-primary' : 'bg-gray-300'}`} />
                 </div>
 
-                {/* The form calls handleSubmit only when the final Submit button is clicked */}
-                <form onSubmit={handleSubmit} className="bg-white/60 rounded-xl shadow-lg p-8 space-y-6">
+                {/* REMOVED onSubmit={handleSubmit} FROM THE FORM TAG */}
+                {/* The form tag is now purely for structure and field grouping */}
+                <form className="bg-white/60 rounded-xl shadow-lg p-8 space-y-6">
 
                     {/* Conditional Rendering of Parts */}
                     {currentStep === 1 && renderPart1()}
@@ -415,9 +414,9 @@ const Questionnaire = () => {
 
                         {/* Next/Submit Button */}
                         {currentStep < 3 ? (
-                            // NEXT BUTTON
+                            // NEXT BUTTON (Ensured type="button" and no form submission)
                             <Button
-                                type="button" // Use type="button" to prevent form submission
+                                type="button"
                                 onClick={handleNext}
                                 className="flex items-center"
                             >
@@ -426,7 +425,8 @@ const Questionnaire = () => {
                         ) : (
                             // SUBMIT BUTTON (Only appears on Part 3)
                             <Button 
-                                type="submit" // Use type="submit" to trigger handleSubmit
+                                type="button" // Must be type="button" to prevent default form submit
+                                onClick={handleSubmit} // Function is now called directly here
                                 size="lg" 
                                 disabled={serverStatus !== 'online'}
                                 className="flex items-center bg-red-600 hover:bg-red-700"
@@ -438,7 +438,7 @@ const Questionnaire = () => {
                 </form>
             </div>
 
-            {/* Result Dialog Modal (Opens only when isModalOpen is true after successful submission) */}
+            {/* Result Dialog Modal (Unchanged) */}
             <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
                 <DialogContent>
                     <DialogHeader>
