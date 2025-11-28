@@ -1,5 +1,4 @@
-import { useState, useEffect } from "react"; // Removed FormEvent from import
-// Assuming the following components are available from a UI library like shadcn/ui
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import {
@@ -19,6 +18,12 @@ import {
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { CheckCircle, XCircle, ArrowLeft, ArrowRight } from "lucide-react";
+
+// --- Import Gender Images ---
+import maleIcon from '@/assets/male.png'; // Make sure paths are correct
+import femaleIcon from '@/assets/female.png'; // Make sure paths are correct
+// --- End Import Gender Images ---
+
 
 // Define the API Endpoint for the disease prediction model
 const API_ENDPOINT = "https://aidetect-github-io.onrender.com";
@@ -120,7 +125,7 @@ const Questionnaire = () => {
     };
     
     // ====================================================================
-    // 3. Navigation Handlers
+    // 3. Navigation Handlers (Unchanged)
     // ====================================================================
     const handleNext = () => {
         const requiredFields = currentStep === 1 ? requiredFieldsPart1 : requiredFieldsPart2;
@@ -148,7 +153,7 @@ const Questionnaire = () => {
     };
 
     // ====================================================================
-    // 4. Submission Handler (TRIGGERED ONLY BY CLICKING THE SUBMIT BUTTON)
+    // 4. Submission Handler (TRIGGERED ONLY BY CLICKING THE SUBMIT BUTTON - Unchanged)
     // ====================================================================
     const handleSubmit = async () => {
         // **IMPORTANT:** Perform final validation to ensure all critical dropdowns are filled
@@ -161,7 +166,6 @@ const Questionnaire = () => {
                 description: "Please ensure all required dropdown fields in Part 1 and Part 2 are selected.",
                 variant: "destructive"
             });
-            // Stop submission if validation fails
             return;
         }
         
@@ -190,7 +194,6 @@ const Questionnaire = () => {
         // --- End One-Hot Encoding Logic ---
 
         try {
-            // API call to the prediction endpoint
             const res = await fetch(`${API_ENDPOINT}/predict`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -206,15 +209,13 @@ const Questionnaire = () => {
             const predictedDisease: string = result.prediction || 'Unknown Disease';
             const confidenceScore: number = result.probability || 0;
 
-            // Set modal content and OPEN THE MODAL ONLY HERE
             setModalContent({
                 title: "Analysis Result",
                 prediction: predictedDisease,
                 probability: confidenceScore
             });
-            setIsModalOpen(true); // <--- Modal only opens after successful submission
+            setIsModalOpen(true);
         } catch (err: any) {
-            // Handle connection or prediction error
             setModalContent({
                 title: "Error",
                 prediction: null,
@@ -226,7 +227,7 @@ const Questionnaire = () => {
     };
 
     // ====================================================================
-    // 5. Render Functions for Each Part (Unchanged)
+    // 5. Render Functions for Each Part (Modified for Gender in Part 1)
     // ====================================================================
 
     // Function to render Part 1: Basic Information
@@ -245,18 +246,34 @@ const Questionnaire = () => {
                     </Select>
                 </div>
 
-                {/* Gender Selection */}
+                {/* Gender Selection - MODIFIED TO INCLUDE IMAGES */}
                 <div>
                     <Label htmlFor="gender-select">Gender</Label>
                     <Select onValueChange={(v) => handleSelectChange("gender", v)} value={formData.gender}>
-                        <SelectTrigger id="gender-select"><SelectValue placeholder="Select gender (Required)" /></SelectTrigger>
+                        <SelectTrigger id="gender-select" className="flex items-center">
+                            {/* Display selected value with icon in the trigger */}
+                            {formData.gender === "Male" && <img src={maleIcon} alt="Male Icon" className="w-5 h-5 mr-2" />}
+                            {formData.gender === "Female" && <img src={femaleIcon} alt="Female Icon" className="w-5 h-5 mr-2" />}
+                            <SelectValue placeholder="Select gender (Required)" />
+                        </SelectTrigger>
                         <SelectContent>
-                            {["Male", "Female"].map(v => <SelectItem key={v} value={v}>{v}</SelectItem>)}
+                            <SelectItem value="Male">
+                                <div className="flex items-center">
+                                    <img src={maleIcon} alt="Male Icon" className="w-5 h-5 mr-2" />
+                                    <span>Male</span>
+                                </div>
+                            </SelectItem>
+                            <SelectItem value="Female">
+                                <div className="flex items-center">
+                                    <img src={femaleIcon} alt="Female Icon" className="w-5 h-5 mr-2" />
+                                    <span>Female</span>
+                                </div>
+                            </SelectItem>
                         </SelectContent>
                     </Select>
                 </div>
 
-                {/* BMI Selection */}
+                {/* BMI Selection (Unchanged) */}
                 <div>
                     <Label htmlFor="bmi-select">Body Mass Index (BMI)</Label>
                     <Select onValueChange={(v) => handleSelectChange("bmi", v)} value={formData.bmi}>
@@ -271,7 +288,7 @@ const Questionnaire = () => {
                     </Select>
                 </div>
 
-                {/* Blood Pressure Selection */}
+                {/* Blood Pressure Selection (Unchanged) */}
                 <div>
                     <Label htmlFor="bp-select">Blood Pressure (Systolic/Diastolic)</Label>
                     <Select onValueChange={(v) => handleSelectChange("bp", v)} value={formData.bp}>
@@ -285,7 +302,7 @@ const Questionnaire = () => {
         </section>
     );
 
-    // Function to render Part 2: Quantity and Weight Data
+    // Function to render Part 2: Quantity and Weight Data (Unchanged)
     const renderPart2 = () => (
         <section className="p-6 border rounded-xl bg-white/80 shadow-lg space-y-4">
             <h2 className="text-2xl font-semibold text-primary/80 mb-4">Part 2/3: Quantity and Weight Data</h2>
@@ -337,7 +354,7 @@ const Questionnaire = () => {
         </section>
     );
 
-    // Function to render Part 3: Symptoms
+    // Function to render Part 3: Symptoms (Unchanged)
     const renderPart3 = () => (
         <section className="p-6 border rounded-xl bg-white/80 shadow-lg space-y-4">
             <h2 className="text-2xl font-semibold text-primary/80 mb-4">Part 3/3: Symptoms</h2>
@@ -360,7 +377,7 @@ const Questionnaire = () => {
     );
 
     // ====================================================================
-    // 6. Main Render Logic
+    // 6. Main Render Logic (Unchanged)
     // ====================================================================
     const isNMD = modalContent.prediction === "No Matching Disease";
     const confidencePercent = modalContent.probability !== null ? (modalContent.probability * 100).toFixed(2) : 'N/A';
@@ -371,7 +388,7 @@ const Questionnaire = () => {
             style={{ backgroundImage: `url('${BACKGROUND_IMAGE_URL}')` }}
         >
 
-            {/* Server Status Indicator (Fixed Position - Unchanged) */}
+            {/* Server Status Indicator */}
             <div className="fixed bottom-5 right-5 bg-card rounded-lg shadow-lg px-4 py-2 flex items-center gap-2 border border-border z-50">
                 <span className={`w-3.5 h-3.5 rounded-full ${serverStatus === "online" ? "bg-green-500" : serverStatus === "offline" ? "bg-red-500" : "bg-gray-400"}`} />
                 <span className="text-sm">
@@ -390,8 +407,6 @@ const Questionnaire = () => {
                     <div className={`w-1/3 h-2 rounded-r-full mx-1 ${currentStep >= 3 ? 'bg-primary' : 'bg-gray-300'}`} />
                 </div>
 
-                {/* REMOVED onSubmit={handleSubmit} FROM THE FORM TAG */}
-                {/* The form tag is now purely for structure and field grouping */}
                 <form className="bg-white/60 rounded-xl shadow-lg p-8 space-y-6">
 
                     {/* Conditional Rendering of Parts */}
@@ -414,7 +429,7 @@ const Questionnaire = () => {
 
                         {/* Next/Submit Button */}
                         {currentStep < 3 ? (
-                            // NEXT BUTTON (Ensured type="button" and no form submission)
+                            // NEXT BUTTON
                             <Button
                                 type="button"
                                 onClick={handleNext}
@@ -423,10 +438,10 @@ const Questionnaire = () => {
                                 Next <ArrowRight className="w-4 h-4 ml-2" />
                             </Button>
                         ) : (
-                            // SUBMIT BUTTON (Only appears on Part 3)
+                            // SUBMIT BUTTON
                             <Button 
-                                type="button" // Must be type="button" to prevent default form submit
-                                onClick={handleSubmit} // Function is now called directly here
+                                type="button"
+                                onClick={handleSubmit}
                                 size="lg" 
                                 disabled={serverStatus !== 'online'}
                                 className="flex items-center bg-red-600 hover:bg-red-700"
@@ -438,7 +453,7 @@ const Questionnaire = () => {
                 </form>
             </div>
 
-            {/* Result Dialog Modal (Unchanged) */}
+            {/* Result Dialog Modal */}
             <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
                 <DialogContent>
                     <DialogHeader>
