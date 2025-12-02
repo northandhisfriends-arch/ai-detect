@@ -18,8 +18,8 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-// 💡 เปลี่ยนมาใช้ CheckCircle และ XCircle สำหรับสถานะ Server
-import { ArrowLeft, ArrowRight, CheckCircle, XCircle } from "lucide-react"; 
+// 💡 เปลี่ยนตรงนี้: เพิ่ม Wifi
+import { ArrowLeft, ArrowRight, CheckCircle, XCircle, Wifi } from "lucide-react"; 
 
 // --- Imports ---
 import maleIcon from '@/assets/male.png'; 
@@ -396,7 +396,7 @@ const Questionnaire = () => {
                             onClick={() => handleSelectChange("gender", "Male")}
                             className={`flex flex-col items-center justify-center p-4 h-auto w-1/2 ${formData.gender === "Male" ? "ring-2 ring-primary border-primary" : "border-gray-300"}`}
                         >
-                            <img src={maleIcon} alt="Male Icon" className="w-30 h-30 mb-2" />
+                            <img src={maleIcon} alt="Male Icon" className="w-10 h-10 mb-2" />
                             <span className="font-semibold">Male</span>
                         </Button>
 
@@ -406,7 +406,7 @@ const Questionnaire = () => {
                             onClick={() => handleSelectChange("gender", "Female")}
                             className={`flex flex-col items-center justify-center p-4 h-auto w-1/2 ${formData.gender === "Female" ? "ring-2 ring-primary border-primary" : "border-gray-300"}`}
                         >
-                            <img src={femaleIcon} alt="Female Icon" className="w-30 h-30 mb-2" />
+                            <img src={femaleIcon} alt="Female Icon" className="w-10 h-10 mb-2" />
                             <span className="font-semibold">Female</span>
                         </Button>
                     </div>
@@ -562,11 +562,11 @@ const Questionnaire = () => {
             style={{ backgroundImage: `url('${BACKGROUND_IMAGE_URL}')` }}
         >
 
-            {/* 💡 Server Status Indicator (กลับสู่รูปแบบเดิม) */}
+            {/* 💡 Server Status Indicator (ปรับใช้ไอคอน Wi-Fi สีเขียว) */}
             <div className="fixed bottom-5 right-5 bg-card rounded-lg shadow-lg px-4 py-2 flex items-center gap-2 border border-border z-50">
                 {serverStatus === "online" ? (
                     <>
-                        <CheckCircle className="w-5 h-5 text-green-600" />
+                        <Wifi className="w-5 h-5 text-green-600" />
                         <span className="text-sm font-semibold text-green-600">Server is Online</span>
                     </>
                 ) : serverStatus === "offline" ? (
@@ -576,7 +576,6 @@ const Questionnaire = () => {
                     </>
                 ) : (
                     <>
-                        {/* Icon/Indicator for checking state can be added here if needed, or simply text */}
                         <span className="text-sm text-gray-500">Checking server...</span>
                     </>
                 )}
