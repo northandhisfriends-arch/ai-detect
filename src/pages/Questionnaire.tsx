@@ -53,7 +53,6 @@ interface ModalContent {
 }
 
 // Define the required fields for validation
-// **หมายเหตุ:** 'bmi' และ 'bp' ถูกเอาออกจากรายการนี้ เพราะเราจะตรวจสอบจาก state ของ input (weight, height, systolicBp) โดยตรง
 const requiredFieldsPart1: (keyof Omit<FormData, 'symptoms'>)[] = ["age", "gender"];
 const requiredFieldsPart2: (keyof Omit<FormData, 'symptoms'>)[] = ["water", "urine", "mass", "massChange"];
 
@@ -68,7 +67,6 @@ const FORM_OPTIONS = {
         { value: ">=25", label: ">=25 (Overweight/Obese)" },
         { value: "N/a", label: "N/a" }
     ],
-    // ค่า BP ยังคงต้องอยู่ใน FORM_OPTIONS เพื่อให้ One-Hot Encoding ทำงานได้ถูกต้อง
     bp: [
         { value: "120/80", label: "120/80 (Normal)" }, { value: ">130/80" }, { value: "<130/80" }, 
         { value: ">=130/80" }, { value: ">140/80" }, { value: "95-145/80" }
@@ -100,7 +98,7 @@ const FORM_OPTIONS = {
 // REUSABLE COMPONENTS
 // ====================================================================
 
-// Utility component to render a Select dropdown from the FORM_OPTIONS map (Unchanged)
+// Utility component to render a Select dropdown from the FORM_OPTIONS map
 interface FormSelectProps {
     field: keyof Omit<FormData, 'symptoms'>;
     label: string;
@@ -158,7 +156,7 @@ const Questionnaire = () => {
     });
 
     // ====================================================================
-    // 1. Server Status Check (Unchanged)
+    // 1. Server Status Check
     // ====================================================================
     useEffect(() => {
         const checkServerStatus = async () => {
@@ -193,7 +191,7 @@ const Questionnaire = () => {
         }));
     }, []);
 
-    // 💡 ฟังก์ชันคำนวณ BMI และตั้งค่า formData.bmi อัตโนมัติ (Unchanged from previous version)
+    // 💡 ฟังก์ชันคำนวณ BMI และตั้งค่า formData.bmi อัตโนมัติ 
     const calculateAndSetBmi = useCallback((w: number, h: number) => {
         if (w > 0 && h > 0) {
             const heightInMeters = h / 100;
@@ -242,7 +240,7 @@ const Questionnaire = () => {
         }
     }, []);
 
-    // 💡 useEffect สำหรับรันการคำนวณ BMI เมื่อ weight หรือ height เปลี่ยน
+    // 💡 useEffect สำหรับรันการคำนวณ BMI เมื่อ weight หรือ height เปลี่ยน 
     useEffect(() => {
         const wNum = typeof weight === 'number' ? weight : 0;
         const hNum = typeof height === 'number' ? height : 0;
@@ -256,7 +254,7 @@ const Questionnaire = () => {
     }, [systolicBp, calculateAndSetBp]); 
 
     // ====================================================================
-    // 3. Navigation Handlers
+    // 3. Navigation Handlers 
     // ====================================================================
     const handleNext = useCallback(() => {
         
@@ -296,7 +294,7 @@ const Questionnaire = () => {
     }, [currentStep]);
 
     // ====================================================================
-    // 4. Submission Handler (Unchanged, uses formData.bmi and formData.bp automatically)
+    // 4. Submission Handler
     // ====================================================================
     const handleSubmit = async () => {
         
@@ -446,8 +444,9 @@ const Questionnaire = () => {
                 
                 {/* 💡 DISPLAY: คำนวณ BMI อัตโนมัติ (2 columns) */}
                 <div className="col-span-1 md:col-span-2">
-                    <Label>Body Mass Index (BMI) - Calculated</Label>
+                    <Label>Body Mass Index (BMI)</Label>
                     <div className="mt-1 p-3 border rounded-md bg-gray-50 flex justify-between items-center">
+                        {/* 💡 ปรับให้มีขนาดตัวอักษรเท่ากับค่า BP Feature */}
                         <span className="font-semibold text-lg">
                             {weight && height 
                                 ? (typeof weight === 'number' && typeof height === 'number' && height > 0
@@ -455,13 +454,14 @@ const Questionnaire = () => {
                                     : "N/A")
                                 : "N/A"}
                         </span>
-                        <span className={`text-sm font-medium px-2 py-1 rounded-full ${formData.bmi === ">=25" ? "bg-red-100 text-red-700" : formData.bmi === ">=18.5" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}>
-                            Auto Selected BMI Feature: **{formData.bmi || "N/A"}**
+                        {/* 💡 แสดงผลลัพธ์การจัดกลุ่ม BMI (Feature Value) */}
+                        <span className={`text-lg font-medium px-2 py-1 rounded-full ${formData.bmi === ">=25" ? "bg-red-100 text-red-700" : formData.bmi === ">=18.5" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}>
+                            **{formData.bmi || "N/A"}**
                         </span>
                     </div>
                 </div>
 
-                {/* 💡 NEW INPUT: Systolic Blood Pressure (BP) (2 columns) */}
+                {/* 💡 INPUT: Systolic Blood Pressure (BP) (2 columns) */}
                 <div className="col-span-1 md:col-span-2">
                     <Label htmlFor="systolic-bp-input">Systolic Blood Pressure (mmHg) <span className="text-red-500">*</span></Label>
                     <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0 mt-1">
@@ -478,11 +478,9 @@ const Questionnaire = () => {
                         />
                         
                         {/* Display Auto-Selected BP Value */}
-                        <div className="p-3 border rounded-md bg-gray-50 flex-grow flex justify-between items-center min-w-[200px]">
-                            <span className="font-semibold text-sm">
-                                Auto Selected BP Feature:
-                            </span>
-                            <span className="text-sm font-medium px-2 py-1 rounded-full bg-blue-100 text-blue-700">
+                        <div className="p-3 border rounded-md bg-gray-50 flex-grow flex justify-center items-center min-w-[200px]">
+                            {/* แสดงเฉพาะค่า BP Feature ที่ถูกเลือกโดยอัตโนมัติ */}
+                            <span className="text-lg font-medium px-2 py-1 rounded-full bg-blue-100 text-blue-700">
                                 **{formData.bp || "N/A"}**
                             </span>
                         </div>
@@ -494,7 +492,7 @@ const Questionnaire = () => {
     ), [formData, handleSelectChange, weight, height, systolicBp]);
 
 
-    // Function to render Part 2: Quantity and Weight Data (Unchanged)
+    // Function to render Part 2: Quantity and Weight Data
     const renderPart2 = useMemo(() => () => (
         <section className="p-6 border rounded-xl bg-white/80 shadow-lg space-y-4">
             <h2 className="text-2xl font-semibold text-primary/80 mb-4">Part 2/3: Quantity and Weight Data</h2>
@@ -539,7 +537,7 @@ const Questionnaire = () => {
         </section>
     ), [formData, handleSelectChange]);
 
-    // Function to render Part 3: Symptoms (Unchanged)
+    // Function to render Part 3: Symptoms
     const renderPart3 = useMemo(() => () => (
         <section className="p-6 border rounded-xl bg-white/80 shadow-lg space-y-4">
             <h2 className="text-2xl font-semibold text-primary/80 mb-4">Part 3/3: Symptoms</h2>
@@ -563,7 +561,7 @@ const Questionnaire = () => {
 
 
     // ====================================================================
-    // 6. Main Render Logic (Unchanged)
+    // 6. Main Render Logic
     // ====================================================================
     const isNMD = modalContent.prediction === "No Matching Disease";
     const confidencePercent = modalContent.probability !== null ? (modalContent.probability * 100).toFixed(2) : 'N/A';
