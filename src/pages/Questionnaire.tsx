@@ -18,10 +18,10 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { CheckCircle, XCircle, ArrowLeft, ArrowRight, Server } from "lucide-react";
+// 💡 เปลี่ยนมาใช้ CheckCircle และ XCircle สำหรับสถานะ Server
+import { ArrowLeft, ArrowRight, CheckCircle, XCircle } from "lucide-react"; 
 
 // --- Imports ---
-// ตรวจสอบให้แน่ใจว่าไฟล์เหล่านี้ (male.png, female.png) อยู่ใน src/assets/
 import maleIcon from '@/assets/male.png'; 
 import femaleIcon from '@/assets/female.png'; 
 
@@ -445,18 +445,14 @@ const Questionnaire = () => {
                 {/* 💡 DISPLAY: คำนวณ BMI อัตโนมัติ (2 columns) */}
                 <div className="col-span-1 md:col-span-2">
                     <Label>Body Mass Index (BMI)</Label>
-                    <div className="mt-1 p-3 border rounded-md bg-gray-50 flex justify-between items-center">
-                        {/* 💡 ปรับให้มีขนาดตัวอักษรเท่ากับค่า BP Feature */}
+                    <div className="mt-1 p-3 border rounded-md bg-gray-50 flex justify-start items-center"> 
+                        {/* แสดงเฉพาะค่า BMI ที่คำนวณได้เป็นตัวเลข */}
                         <span className="font-semibold text-lg">
                             {weight && height 
                                 ? (typeof weight === 'number' && typeof height === 'number' && height > 0
                                     ? (weight / ((height / 100) ** 2)).toFixed(2)
                                     : "N/A")
                                 : "N/A"}
-                        </span>
-                        {/* 💡 แสดงผลลัพธ์การจัดกลุ่ม BMI (Feature Value) */}
-                        <span className={`text-lg font-medium px-2 py-1 rounded-full ${formData.bmi === ">=25" ? "bg-red-100 text-red-700" : formData.bmi === ">=18.5" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}>
-                            **{formData.bmi || "N/A"}**
                         </span>
                     </div>
                 </div>
@@ -477,13 +473,7 @@ const Questionnaire = () => {
                             required
                         />
                         
-                        {/* Display Auto-Selected BP Value */}
-                        <div className="p-3 border rounded-md bg-gray-50 flex-grow flex justify-center items-center min-w-[200px]">
-                            {/* แสดงเฉพาะค่า BP Feature ที่ถูกเลือกโดยอัตโนมัติ */}
-                            <span className="text-lg font-medium px-2 py-1 rounded-full bg-blue-100 text-blue-700">
-                                **{formData.bp || "N/A"}**
-                            </span>
-                        </div>
+                        {/* ลบส่วนแสดงผล Auto-Selected BP Value ออก */}
                     </div>
                 </div>
 
@@ -572,13 +562,24 @@ const Questionnaire = () => {
             style={{ backgroundImage: `url('${BACKGROUND_IMAGE_URL}')` }}
         >
 
-            {/* Server Status Indicator */}
+            {/* 💡 Server Status Indicator (กลับสู่รูปแบบเดิม) */}
             <div className="fixed bottom-5 right-5 bg-card rounded-lg shadow-lg px-4 py-2 flex items-center gap-2 border border-border z-50">
-                <span className={`w-3.5 h-3.5 rounded-full ${serverStatus === "online" ? "bg-green-500" : serverStatus === "offline" ? "bg-red-500" : "bg-gray-400"}`} />
-                <span className="text-sm flex items-center">
-                    <Server className="w-3.5 h-3.5 mr-1" />
-                    {serverStatus === "online" ? "Server Online" : serverStatus === "offline" ? "Cannot connect" : "Checking server..."}
-                </span>
+                {serverStatus === "online" ? (
+                    <>
+                        <CheckCircle className="w-5 h-5 text-green-600" />
+                        <span className="text-sm font-semibold text-green-600">Server is Online</span>
+                    </>
+                ) : serverStatus === "offline" ? (
+                    <>
+                        <XCircle className="w-5 h-5 text-red-600" />
+                        <span className="text-sm font-semibold text-red-600">Server is Offline</span>
+                    </>
+                ) : (
+                    <>
+                        {/* Icon/Indicator for checking state can be added here if needed, or simply text */}
+                        <span className="text-sm text-gray-500">Checking server...</span>
+                    </>
+                )}
             </div>
 
             {/* Content container */}
