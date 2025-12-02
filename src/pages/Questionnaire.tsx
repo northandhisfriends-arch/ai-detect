@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
+// UI Components
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import {
@@ -17,26 +18,25 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { CheckCircle, XCircle, ArrowLeft, ArrowRight } from "lucide-react";
+import { CheckCircle, XCircle, ArrowLeft, ArrowRight, Server } from "lucide-react";
 
-// --- Import Gender Images ---
+// --- Imports ---
 // ตรวจสอบให้แน่ใจว่าไฟล์เหล่านี้ (male.png, female.png) อยู่ใน src/assets/
 import maleIcon from '@/assets/male.png'; 
 import femaleIcon from '@/assets/female.png'; 
-// --- End Import Gender Images ---
 
-
-// Define the API Endpoint for the disease prediction model
+// ====================================================================
+// CONFIGURATION AND CONSTANTS
+// ====================================================================
 const API_ENDPOINT = "https://aidetect-github-io.onrender.com";
-
-// Background image URL for the questionnaire
 const BACKGROUND_IMAGE_URL = 'https://github.com/northandhisfriends-arch/ai-detect/blob/main/src/assets/bg_q.jpg?raw=true';
+const SERVER_POLL_INTERVAL = 5000; // 5 seconds
 
-// Form data structure
+// Define Form data structure keys based on your component logic
 interface FormData {
     age: string;
     urine: string;
-    bmi: string;
+    bmi: string; // ค่านี้จะถูกตั้งค่าอัตโนมัติจาก weight/height
     water: string;
     bp: string;
     mass: string;
@@ -45,7 +45,6 @@ interface FormData {
     symptoms: string[];
 }
 
-// Modal data structure
 interface ModalContent {
     title: string;
     prediction: string | null;
@@ -54,135 +53,237 @@ interface ModalContent {
 }
 
 // Define the required fields for validation on Part 1 and Part 2
-const requiredFieldsPart1: (keyof Omit<FormData, 'symptoms'>)[] = ["age", "gender", "bmi", "bp"];
+// **หมายเหตุ:** 'bmi' ถูกแทนที่ด้วยการตรวจสอบ 'weight' และ 'height' ใน handleNext/handleSubmit
+const requiredFieldsPart1: (keyof Omit<FormData, 'symptoms'>)[] = ["age", "gender", "bp"];
 const requiredFieldsPart2: (keyof Omit<FormData, 'symptoms'>)[] = ["water", "urine", "mass", "massChange"];
 
-const Questionnaire = () => {
-    // State for multi-step form navigation: 1, 2, or 3
-    const [currentStep, setCurrentStep] = useState(1);
-    
-    // Server status and modal states (unchanged)
-    const [serverStatus, setServerStatus] = useState<"checking" | "online" | "offline">("checking");
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [modalContent, setModalContent] = useState<ModalContent>({ title: "", prediction: null, probability: null });
-
-    // Hooks (unchanged)
-    const { toast } = useToast();
-    const navigate = useNavigate();
-
-    // Form data state (unchanged)
-    const [formData, setFormData] = useState<FormData>({
-        age: "", urine: "", bmi: "", water: "", bp: "", mass: "",
-        massChange: "", gender: "", symptoms: [] as string[],
-    });
-
-    // List of symptoms (unchanged)
-    const symptoms = [
+// --- Data Options Map (Centralized for maintenance and mapping) ---
+const FORM_OPTIONS = {
+    age: [
+        { value: "0-1" }, { value: "5-15" }, { value: "10-20" }, { value: "40+" }, 
+        { value: "45+" }, { value: "50+" }, { value: "60+" }, { value: "65+" }
+    ],
+    // BMI ถูกใช้เป็นค่าที่ถูกเลือกอัตโนมัติ แต่ยังคงต้องมีใน Options Map สำหรับการเข้ารหัส
+    bmi: [
+        { value: ">=18.5", label: ">=18.5 (Normal/Overweight)" },
+        { value: ">=25", label: ">=25 (Overweight/Obese)" },
+        { value: "N/a", label: "N/a" }
+    ],
+    bp: [
+        { value: "120/80", label: "120/80 (Normal)" }, { value: ">130/80" }, { value: "<130/80" }, 
+        { value: ">=130/80" }, { value: ">140/80" }, { value: "95-145/80" }
+    ],
+    water: [{ value: "<=2700" }, { value: ">=3700" }],
+    urine: [
+        { value: "<500" }, { value: "<800" }, { value: "350-550" }, 
+        { value: "800-2000", label: "800-2000 (Normal)" }, 
+        { value: "2000-3000" }, { value: ">2000" }, { value: ">3000" }
+    ],
+    mass: [{ value: "Mass" }, { value: "Negligible" }, { value: "Overweight" }],
+    massChange: [
+        { value: "M+/-" }, { value: "M+7Kg" }, { value: "-M+7Kg or 10Kg" }, 
+        { value: "M minus 1Kg" }, { value: "M minus 5Kg" }, { value: "M minus 10Kg" }, 
+        { value: "M minus 0.5-1Kg" }, { value: "<M" }, { value: "No change" }, 
+        { value: "Negligible.1", label: "Negligible Change" }
+    ],
+    symptoms: [
         "Wheezing", "Headache", "Short Breaths", "Rapid Breathing", "Anxiety",
         "Urine at Night", "Irritability", "Blurred Vision", "Slow Healing",
         "Dry Mouth", "Muscle Aches", "Nausea/Vomiting", "Insomnia",
         "Chest Pain", "Dizziness", "Nosebleeds", "Foamy Urine",
         "Abdominal Pain", "Itchy Skin", "Dark Urine", "Bone Pain",
-    ];
+    ],
+} as const;
+
+
+// ====================================================================
+// REUSABLE COMPONENTS
+// ====================================================================
+
+// Utility component to render a Select dropdown from the FORM_OPTIONS map
+interface FormSelectProps {
+    field: keyof Omit<FormData, 'symptoms'>;
+    label: string;
+    formData: FormData;
+    handleSelectChange: (field: keyof Omit<FormData, 'symptoms'>, value: string) => void;
+    placeholder: string;
+    disabled?: boolean;
+}
+
+const FormSelect: React.FC<FormSelectProps> = ({ field, label, formData, handleSelectChange, placeholder, disabled = false }) => (
+    <div>
+        <Label htmlFor={`${field}-select`}>{label}</Label>
+        <Select 
+            onValueChange={(v) => handleSelectChange(field, v)} 
+            value={formData[field]}
+            disabled={disabled}
+        >
+            <SelectTrigger id={`${field}-select`}>
+                <SelectValue placeholder={`${placeholder} ${requiredFieldsPart1.includes(field) || requiredFieldsPart2.includes(field) ? '(Required)' : ''}`} />
+            </SelectTrigger>
+            <SelectContent>
+                {FORM_OPTIONS[field as keyof typeof FORM_OPTIONS].map((item) => (
+                    <SelectItem key={item.value} value={item.value}>
+                        {item.label || item.value}
+                    </SelectItem>
+                ))}
+            </SelectContent>
+        </Select>
+    </div>
+);
+
+
+// ====================================================================
+// MAIN COMPONENT
+// ====================================================================
+
+const Questionnaire = () => {
+    // State for multi-step form navigation: 1, 2, or 3
+    const [currentStep, setCurrentStep] = useState(1);
+    const [serverStatus, setServerStatus] = useState<"checking" | "online" | "offline">("checking");
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalContent, setModalContent] = useState<ModalContent>({ title: "", prediction: null, probability: null });
+    
+    // 💡 State สำหรับ Weight และ Height Input
+    const [weight, setWeight] = useState<number | ''>('');
+    const [height, setHeight] = useState<number | ''>(''); 
+
+    const { toast } = useToast();
+    const navigate = useNavigate();
+
+    const [formData, setFormData] = useState<FormData>({
+        age: "", urine: "", bmi: "", water: "", bp: "", mass: "",
+        massChange: "", gender: "", symptoms: [] as string[],
+    });
 
     // ====================================================================
-    // 1. Server Status Check (Unchanged)
+    // 1. Server Status Check
     // ====================================================================
     useEffect(() => {
-        let timeoutId: NodeJS.Timeout;
         const checkServerStatus = async () => {
             try {
                 const res = await fetch(`${API_ENDPOINT}/api/status`);
                 const data = await res.json();
-                const status = data.status === "online" ? "online" : "offline";
-                setServerStatus(status);
-                if (status !== "online") {
-                    timeoutId = setTimeout(checkServerStatus, 5000);
-                }
+                setServerStatus(data.status === "online" ? "online" : "offline");
             } catch {
                 setServerStatus("offline");
-                timeoutId = setTimeout(checkServerStatus, 5000);
             }
         };
-        checkServerStatus();
 
-        return () => clearTimeout(timeoutId);
+        checkServerStatus();
+        const intervalId = setInterval(checkServerStatus, SERVER_POLL_INTERVAL);
+
+        return () => clearInterval(intervalId);
     }, []);
 
     // ====================================================================
-    // 2. Form Handlers (Unchanged)
+    // 2. Form Handlers & BMI Calculation Logic
     // ====================================================================
-    const handleSelectChange = (field: keyof Omit<FormData, 'symptoms'>, value: string) => {
+    const handleSelectChange = useCallback((field: keyof Omit<FormData, 'symptoms'>, value: string) => {
         setFormData(prev => ({ ...prev, [field]: value }));
-    };
+    }, []);
 
-    const handleSymptomChange = (symptom: string, checked: boolean) => {
+    const handleSymptomChange = useCallback((symptom: string, checked: boolean) => {
         setFormData(prev => ({
             ...prev,
             symptoms: checked
                 ? [...prev.symptoms, symptom]
                 : prev.symptoms.filter(s => s !== symptom),
         }));
-    };
-    
+    }, []);
+
+    // 💡 ฟังก์ชันคำนวณ BMI และตั้งค่า formData.bmi อัตโนมัติ
+    const calculateAndSetBmi = useCallback((w: number, h: number) => {
+        let selectedBmiValue: string = "N/a"; // ค่าเริ่มต้น
+        
+        if (w > 0 && h > 0) {
+            const heightInMeters = h / 100;
+            const bmiValue = w / (heightInMeters * heightInMeters);
+
+            // เงื่อนไขการเลือก BMI
+            if (bmiValue >= 25) {
+                selectedBmiValue = ">=25";
+            } else if (bmiValue >= 18.5) {
+                selectedBmiValue = ">=18.5";
+            } else {
+                selectedBmiValue = "N/a";
+            }
+        }
+        
+        // อัปเดต formData.bmi อัตโนมัติ
+        setFormData(prev => ({ ...prev, bmi: selectedBmiValue }));
+    }, []);
+
+    // 💡 useEffect สำหรับรันการคำนวณ BMI เมื่อ weight หรือ height เปลี่ยน
+    useEffect(() => {
+        // แปลงเป็นตัวเลข ถ้าไม่ใช่ ให้ถือว่าเป็น 0 เพื่อป้องกัน NaN ในการคำนวณ
+        const wNum = typeof weight === 'number' ? weight : 0;
+        const hNum = typeof height === 'number' ? height : 0;
+
+        calculateAndSetBmi(wNum, hNum);
+    }, [weight, height, calculateAndSetBmi]); 
+
     // ====================================================================
-    // 3. Navigation Handlers (Unchanged)
+    // 3. Navigation Handlers
     // ====================================================================
-    const handleNext = () => {
+    const handleNext = useCallback(() => {
         const requiredFields = currentStep === 1 ? requiredFieldsPart1 : requiredFieldsPart2;
-        const isPartValid = requiredFields.every(field => formData[field] !== "");
+        
+        // ตรวจสอบ BMI inputs เพิ่มเติมสำหรับ Part 1
+        let isPartValid = requiredFields.every(field => formData[field] !== "");
+
+        if (currentStep === 1) {
+            if (weight === '' || height === '') {
+                 isPartValid = false;
+            }
+        }
 
         if (!isPartValid) {
             toast({
                 title: "Validation Error",
-                description: `Please fill in all required fields in Part ${currentStep} before proceeding.`,
+                description: `Please fill in all required fields (including Weight/Height) in Part ${currentStep} before proceeding.`,
                 variant: "destructive"
             });
             return;
         }
 
-        // Move to the next step
         if (currentStep < 3) {
             setCurrentStep(prev => prev + 1);
         }
-    };
+    }, [currentStep, formData, toast, weight, height]);
 
-    const handleBack = () => {
+    const handleBack = useCallback(() => {
         if (currentStep > 1) {
             setCurrentStep(prev => prev - 1);
         }
-    };
+    }, [currentStep]);
 
     // ====================================================================
-    // 4. Submission Handler (Unchanged)
+    // 4. Submission Handler
     // ====================================================================
     const handleSubmit = async () => {
-        // **IMPORTANT:** Perform final validation to ensure all critical dropdowns are filled
+        // ตรวจสอบความถูกต้องของ Part 1 และ Part 2 ทั้งหมด
         const allRequiredFields = [...requiredFieldsPart1, ...requiredFieldsPart2];
-        const isFormValid = allRequiredFields.every(field => formData[field] !== "");
+        const isFormValid = allRequiredFields.every(field => formData[field] !== "") && weight !== '' && height !== '';
 
         if (!isFormValid) {
             toast({
                 title: "Validation Error",
-                description: "Please ensure all required dropdown fields in Part 1 and Part 2 are selected.",
+                description: "Please ensure all required fields in Part 1 (including Weight/Height) and Part 2 are selected/filled.",
                 variant: "destructive"
             });
             return;
         }
-        
-        // --- One-Hot Encoding Logic (Same as before) ---
-        const data62Features: Record<string, number> = {
-            "0-1": 0, "5-15": 0, "10-20": 0, "40+": 0, "45+": 0, "50+": 0, "60+": 0, "65+": 0,
-            "<500": 0, "<800": 0, "350-550": 0, "800-2000": 0, "2000-3000": 0, ">2000": 0, ">3000": 0,
-            ">=18.5": 0, ">=25": 0, "N/a": 0,
-            "<=2700": 0, ">=3700": 0,
-            "120/80": 0, ">130/80": 0, "<130/80": 0, ">=130/80": 0, ">140/80": 0, "95-145/80": 0,
-            "Mass": 0, "Negligible": 0, "Overweight": 0,
-            "M+/-": 0, "M+7Kg": 0, "-M+7Kg or 10Kg": 0, "M minus 1Kg": 0,
-            "M minus 5Kg": 0, "M minus 10Kg": 0, "M minus 0.5-1Kg": 0, "<M": 0, "No change": 0,
-            "Negligible.1": 0, "Male": 0, "Female": 0,
-            ...Object.fromEntries(symptoms.map(s => [s, 0]))
-        };
+
+        // --- One-Hot Encoding Logic (Same as before, relies on formData.bmi being set) ---
+        const initial62Features: Record<string, number> = {};
+        (Object.values(FORM_OPTIONS).flat() as { value: string }[]).forEach(item => {
+            if (item.value) initial62Features[item.value] = 0;
+        });
+        FORM_OPTIONS.symptoms.forEach(s => { initial62Features[s] = 0; });
+        initial62Features["Negligible.1"] = 0; 
+
+        const data62Features: Record<string, number> = { ...initial62Features };
 
         (["age", "urine", "bmi", "water", "bp", "mass", "massChange", "gender"] as const).forEach(field => {
             const value = formData[field];
@@ -228,145 +329,164 @@ const Questionnaire = () => {
     };
 
     // ====================================================================
-    // 5. Render Functions for Each Part 
+    // 5. Render Functions for Each Part
     // ====================================================================
-
+    
     // Function to render Part 1: Basic Information
-    const renderPart1 = () => (
+    const renderPart1 = useMemo(() => () => (
         <section className="p-6 border rounded-xl bg-white/80 shadow-lg space-y-4">
             <h2 className="text-2xl font-semibold text-primary/80 mb-4">Part 1/3: Basic Information</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                
                 {/* Age Selection */}
-                <div>
-                    <Label htmlFor="age-select">Age</Label>
-                    <Select onValueChange={(v) => handleSelectChange("age", v)} value={formData.age}>
-                        <SelectTrigger id="age-select"><SelectValue placeholder="Select age (Required)" /></SelectTrigger>
-                        <SelectContent>
-                            {["0-1", "5-15", "10-20", "40+", "45+", "50+", "60+", "65+"].map(v => <SelectItem key={v} value={v}>{v}</SelectItem>)}
-                        </SelectContent>
-                    </Select>
-                </div>
+                <FormSelect 
+                    field="age" 
+                    label="Age" 
+                    placeholder="Select age" 
+                    formData={formData} 
+                    handleSelectChange={handleSelectChange} 
+                />
 
-                {/* Gender Selection - MODIFIED to Button Group */}
+                {/* Gender Selection */}
                 <div>
                     <Label htmlFor="gender-select" className="mb-2 block">Gender (Required)</Label>
                     <div className="flex space-x-4">
-                        {/* Male Button */}
                         <Button
                             type="button"
-                            // กำหนด variant เป็น default เมื่อถูกเลือก, เป็น outline เมื่อยังไม่ถูกเลือก
                             variant={formData.gender === "Male" ? "default" : "outline"}
                             onClick={() => handleSelectChange("gender", "Male")}
-                            // จัดรูปแบบให้แสดงรูปและข้อความในแนวตั้ง และเพิ่ม ring เมื่อถูกเลือก
                             className={`flex flex-col items-center justify-center p-4 h-auto w-1/2 ${formData.gender === "Male" ? "ring-2 ring-primary border-primary" : "border-gray-300"}`}
                         >
-                            <img src={maleIcon} alt="Male Icon" className="w-30 h-30 mb-2" />
+                            <img src={maleIcon} alt="Male Icon" className="w-10 h-10 mb-2" />
                             <span className="font-semibold">Male</span>
                         </Button>
 
-                        {/* Female Button */}
                         <Button
                             type="button"
                             variant={formData.gender === "Female" ? "default" : "outline"}
                             onClick={() => handleSelectChange("gender", "Female")}
                             className={`flex flex-col items-center justify-center p-4 h-auto w-1/2 ${formData.gender === "Female" ? "ring-2 ring-primary border-primary" : "border-gray-300"}`}
                         >
-                            <img src={femaleIcon} alt="Female Icon" className="w-30 h-30 mb-2" />
+                            <img src={femaleIcon} alt="Female Icon" className="w-10 h-10 mb-2" />
                             <span className="font-semibold">Female</span>
                         </Button>
                     </div>
                 </div>
-                {/* End of Gender Selection */}
 
-                {/* BMI Selection */}
+                {/* 💡 INPUT: Weight (น้ำหนัก) */}
                 <div>
-                    <Label htmlFor="bmi-select">Body Mass Index (BMI)</Label>
-                    <Select onValueChange={(v) => handleSelectChange("bmi", v)} value={formData.bmi}>
-                        <SelectTrigger id="bmi-select"><SelectValue placeholder="Select BMI (Required)" /></SelectTrigger>
-                        <SelectContent>
-                            {[
-                                { val: ">=18.5", label: ">=18.5 (Normal/Overweight)" },
-                                { val: ">=25", label: ">=25 (Overweight/Obese)" },
-                                { val: "N/a", label: "N/a" }
-                            ].map(item => <SelectItem key={item.val} value={item.val}>{item.label}</SelectItem>)}
-                        </SelectContent>
-                    </Select>
+                    <Label htmlFor="weight-input">Weight (kg) <span className="text-red-500">*</span></Label>
+                    <input
+                        id="weight-input"
+                        type="number"
+                        min="1"
+                        value={weight}
+                        onChange={(e) => setWeight(e.target.value === '' ? '' : parseFloat(e.target.value))}
+                        placeholder="Enter weight in kg"
+                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                        required
+                    />
+                </div>
+
+                {/* 💡 INPUT: Height (ส่วนสูง) */}
+                <div>
+                    <Label htmlFor="height-input">Height (cm) <span className="text-red-500">*</span></Label>
+                    <input
+                        id="height-input"
+                        type="number"
+                        min="1"
+                        value={height}
+                        onChange={(e) => setHeight(e.target.value === '' ? '' : parseFloat(e.target.value))}
+                        placeholder="Enter height in cm"
+                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                        required
+                    />
+                </div>
+                
+                {/* 💡 DISPLAY: คำนวณ BMI อัตโนมัติ (แทน Dropdown เดิม) */}
+                <div className="col-span-1 md:col-span-2">
+                    <Label>Body Mass Index (BMI) - Calculated</Label>
+                    <div className="mt-1 p-3 border rounded-md bg-gray-50 flex justify-between items-center">
+                        <span className="font-semibold text-lg">
+                            {weight && height 
+                                ? (typeof weight === 'number' && typeof height === 'number' && height > 0
+                                    ? (weight / ((height / 100) ** 2)).toFixed(2)
+                                    : "N/A") // แสดงค่า BMI ที่คำนวณ
+                                : "N/A"}
+                        </span>
+                        <span className={`text-sm font-medium px-2 py-1 rounded-full ${formData.bmi === ">=25" ? "bg-red-100 text-red-700" : formData.bmi === ">=18.5" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}>
+                            Auto Selected: **{formData.bmi || "N/A"}**
+                        </span>
+                    </div>
                 </div>
 
                 {/* Blood Pressure Selection */}
-                <div>
-                    <Label htmlFor="bp-select">Blood Pressure (Systolic/Diastolic)</Label>
-                    <Select onValueChange={(v) => handleSelectChange("bp", v)} value={formData.bp}>
-                        <SelectTrigger id="bp-select"><SelectValue placeholder="Select BP (Required)" /></SelectTrigger>
-                        <SelectContent>
-                            {["120/80", ">130/80", "<130/80", ">=130/80", ">140/80", "95-145/80"].map(v => <SelectItem key={v} value={v}>{v} {v === "120/80" && "(Normal)"}</SelectItem>)}
-                        </SelectContent>
-                    </Select>
+                <div className="col-span-1 md:col-span-2">
+                    <FormSelect 
+                        field="bp" 
+                        label="Blood Pressure (Systolic/Diastolic)" 
+                        placeholder="Select BP" 
+                        formData={formData} 
+                        handleSelectChange={handleSelectChange} 
+                    />
                 </div>
             </div>
         </section>
-    );
+    ), [formData, handleSelectChange, weight, height]);
 
-    // Function to render Part 2: Quantity and Weight Data
-    const renderPart2 = () => (
+    // Function to render Part 2: Quantity and Weight Data (Unchanged)
+    const renderPart2 = useMemo(() => () => (
         <section className="p-6 border rounded-xl bg-white/80 shadow-lg space-y-4">
             <h2 className="text-2xl font-semibold text-primary/80 mb-4">Part 2/3: Quantity and Weight Data</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                
                 {/* Water Intake Selection */}
-                <div>
-                    <Label htmlFor="water-select">Water Intake (mL)</Label>
-                    <Select onValueChange={(v) => handleSelectChange("water", v)} value={formData.water}>
-                        <SelectTrigger id="water-select"><SelectValue placeholder="Select water intake (Required)" /></SelectTrigger>
-                        <SelectContent>
-                            {["<=2700", ">=3700"].map(v => <SelectItem key={v} value={v}>{v}</SelectItem>)}
-                        </SelectContent>
-                    </Select>
-                </div>
+                <FormSelect 
+                    field="water" 
+                    label="Water Intake (mL)" 
+                    placeholder="Select water intake" 
+                    formData={formData} 
+                    handleSelectChange={handleSelectChange} 
+                />
 
                 {/* Urine Selection */}
-                <div>
-                    <Label htmlFor="urine-select">Urine per Day (mL)</Label>
-                    <Select onValueChange={(v) => handleSelectChange("urine", v)} value={formData.urine}>
-                        <SelectTrigger id="urine-select"><SelectValue placeholder="Select urine volume (Required)" /></SelectTrigger>
-                        <SelectContent>
-                            {["<500", "<800", "350-550", "800-2000", "2000-3000", ">2000", ">3000"].map(v => <SelectItem key={v} value={v}>{v} {v === "800-2000" && "(Normal)"}</SelectItem>)}
-                        </SelectContent>
-                    </Select>
-                </div>
+                <FormSelect 
+                    field="urine" 
+                    label="Urine per Day (mL)" 
+                    placeholder="Select urine volume" 
+                    formData={formData} 
+                    handleSelectChange={handleSelectChange} 
+                />
 
                 {/* Mass Classification Selection */}
-                <div>
-                    <Label htmlFor="mass-select">Mass Classification</Label>
-                    <Select onValueChange={(v) => handleSelectChange("mass", v)} value={formData.mass}>
-                        <SelectTrigger id="mass-select"><SelectValue placeholder="Select mass classification (Required)" /></SelectTrigger>
-                        <SelectContent>
-                            {["Mass", "Negligible", "Overweight"].map(v => <SelectItem key={v} value={v}>{v}</SelectItem>)}
-                        </SelectContent>
-                    </Select>
-                </div>
+                <FormSelect 
+                    field="mass" 
+                    label="Mass Classification" 
+                    placeholder="Select mass classification" 
+                    formData={formData} 
+                    handleSelectChange={handleSelectChange} 
+                />
 
                 {/* Mass Change Selection */}
-                <div>
-                    <Label htmlFor="massChange-select">Mass Change (Relative to Normal Mass 'M')</Label>
-                    <Select onValueChange={(v) => handleSelectChange("massChange", v)} value={formData.massChange}>
-                        <SelectTrigger id="massChange-select"><SelectValue placeholder="Select mass change (Required)" /></SelectTrigger>
-                        <SelectContent>
-                            {["M+/-", "M+7Kg", "-M+7Kg or 10Kg", "M minus 1Kg", "M minus 5Kg", "M minus 10Kg", "M minus 0.5-1Kg", "<M", "No change", "Negligible.1"].map(v => <SelectItem key={v} value={v}>{v}</SelectItem>)}
-                        </SelectContent>
-                    </Select>
-                </div>
+                <FormSelect 
+                    field="massChange" 
+                    label="Mass Change (Relative to Normal Mass 'M')" 
+                    placeholder="Select mass change" 
+                    formData={formData} 
+                    handleSelectChange={handleSelectChange} 
+                />
             </div>
         </section>
-    );
+    ), [formData, handleSelectChange]);
 
-    // Function to render Part 3: Symptoms
-    const renderPart3 = () => (
+    // Function to render Part 3: Symptoms (Unchanged)
+    const renderPart3 = useMemo(() => () => (
         <section className="p-6 border rounded-xl bg-white/80 shadow-lg space-y-4">
             <h2 className="text-2xl font-semibold text-primary/80 mb-4">Part 3/3: Symptoms</h2>
             <div>
                 <Label>Symptoms (Optional: Select all that apply)</Label>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-2">
-                    {symptoms.map(symptom => (
+                    {FORM_OPTIONS.symptoms.map(symptom => (
                         <div key={symptom} className="flex items-center space-x-2">
                             <Checkbox
                                 id={symptom}
@@ -379,7 +499,8 @@ const Questionnaire = () => {
                 </div>
             </div>
         </section>
-    );
+    ), [formData.symptoms, handleSymptomChange]);
+
 
     // ====================================================================
     // 6. Main Render Logic
@@ -396,7 +517,8 @@ const Questionnaire = () => {
             {/* Server Status Indicator */}
             <div className="fixed bottom-5 right-5 bg-card rounded-lg shadow-lg px-4 py-2 flex items-center gap-2 border border-border z-50">
                 <span className={`w-3.5 h-3.5 rounded-full ${serverStatus === "online" ? "bg-green-500" : serverStatus === "offline" ? "bg-red-500" : "bg-gray-400"}`} />
-                <span className="text-sm">
+                <span className="text-sm flex items-center">
+                    <Server className="w-3.5 h-3.5 mr-1" />
                     {serverStatus === "online" ? "Server Online" : serverStatus === "offline" ? "Cannot connect" : "Checking server..."}
                 </span>
             </div>
@@ -412,7 +534,7 @@ const Questionnaire = () => {
                     <div className={`w-1/3 h-2 rounded-r-full mx-1 ${currentStep >= 3 ? 'bg-primary' : 'bg-gray-300'}`} />
                 </div>
 
-                <form className="bg-white/60 rounded-xl shadow-lg p-8 space-y-6">
+                <form className="bg-white/60 rounded-xl shadow-lg p-8 space-y-6" onSubmit={(e) => e.preventDefault()}>
 
                     {/* Conditional Rendering of Parts */}
                     {currentStep === 1 && renderPart1()}
