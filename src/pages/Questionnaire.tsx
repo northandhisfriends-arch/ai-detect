@@ -77,7 +77,7 @@ const FORM_OPTIONS = {
         { value: "800-2000", label: "800-2000 (Normal)" }, 
         { value: "2000-3000" }, { value: ">2000" }, { value: ">3000" }
     ],
-    mass: [{ value: "Mass" }, { value: "Negligible" }, { value: "Overweight" }],
+    mass: [{ value: "Mass (BMI: ~18-25" }, { value: "Negligible" }, { value: "Overweight (BMI: >25)" }],
     massChange: [
         { value: "M+/-" }, { value: "M+7Kg" }, { value: "-M+7Kg or 10Kg" }, 
         { value: "M minus 1Kg" }, { value: "M minus 5Kg" }, { value: "M minus 10Kg" }, 
